@@ -1,0 +1,133 @@
+swagger: "2.0"
+info:
+  title: Chat Microservices
+  description: All the APIs provided by the chat team
+  version: 0.0.1
+definitions:
+  
+  channel:
+    type: object
+    properties:
+      channelId:
+        type: integer
+      channelName:
+        type: string
+      users:
+        type: array
+        items:
+          $ref: "#/definitions/user"
+      admin:
+        $ref: "#/definitions/user"
+      messages:
+        type: array
+        items: 
+          $ref: "#/definitions/message"
+  
+  user:
+    type: object
+    required:
+      - username
+      - password
+    properties:
+      userId:
+        type: integer
+      firstName:
+        type: string
+      lastName:
+        type: string
+      username: 
+        type: string
+        format: email
+      designation:
+        type: string
+      workspaceName:
+        type: string
+  
+  message: 
+    type: object
+    properties:
+      messageId:
+        type: integer
+      messageBody:
+        type: string
+      timeStamp:
+        type: string
+        format: date-time
+      isStarred:
+        type: boolean
+      sender:
+        $ref: "#/definitions/user"
+  
+  workspace:
+    type: object
+    required:
+      - workspaceId
+      - workspaceName
+    properties:
+      workspaceId:
+        type: integer
+      workspaceName:
+        type: string
+      channels: 
+        type: array
+        items:
+          $ref : "#definitions/channel"
+paths:
+  /member:
+    post:
+      summary: Adds a member to a channel
+      parameters:
+      - name: userName
+        in: query
+        required: true
+        schema:
+          type: string
+          format: email
+      - name: channelId
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        201:
+          description: User added
+        404:
+          description: User not added
+
+  /channels:
+    get:
+      summary: Returns list of channels user is part of
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          description: userId (email)
+        - in: query
+          name: worspaceName
+          schema:
+            type: string
+          description: workspace name
+      responses:
+        200:
+          description: List of channels
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                channelId:
+                  type: integer
+                channelName:
+                  type: string
+                users:
+                  type: array
+                  items:
+                    $ref: "#/definitions/user"
+                admin:
+                    $ref: "#/definitions/user"
+                messages:
+                  type: array
+                  items: 
+                    $ref: "#/definitions/message"
+                # $ref: "#/definitions/Channels"

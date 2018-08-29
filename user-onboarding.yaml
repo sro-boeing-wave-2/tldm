@@ -1,0 +1,81 @@
+swagger: "2.0"
+info:
+  title: User Onboarding Microservices
+  description: APIs provided by the onboarding team
+  version: 0.0.1
+definitions:
+  loginViewModel :
+    type: object
+    required:
+      - username
+      - password
+    properties: 
+      username: 
+        type: string
+        format: email
+      password :
+        type : string
+        format : password
+      workspaceName :
+        type : string
+        
+  user:
+    type: object
+    required:
+      - username
+      - password
+    properties:
+      userId:
+        type: integer
+      firstName:
+        type: string
+      lastName:
+        type: string
+      username: 
+        type: string
+        format: email
+      password :
+        type : string
+        format : password
+      designation:
+        type: string
+      workspaceName:
+        type: string
+paths:
+  /signup:
+    post:
+      summary : Signs the user up
+      parameters:
+      - name: user
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/user"
+      responses:
+        201:
+          description: User is signed up(created)
+        400:
+          description: User not signed up(not created)
+
+  /login:
+    post:
+      summary : Authenticates the user
+      parameters:
+      - name: user
+        in: body
+        required: false
+        schema:
+          $ref: "#/definitions/loginViewModel"
+      responses:
+        200:
+          description: User is logged in
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              expiration:
+                type: string
+                format: date-time
+        401:
+          description: User not logged in

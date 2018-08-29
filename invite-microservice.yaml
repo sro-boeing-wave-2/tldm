@@ -1,0 +1,85 @@
+swagger: '2.0'
+info:
+  version: v1
+  title: Invite Microservice
+  description: Invite API
+paths:
+  "/api/Users":
+    get:
+      tags:
+      - Users
+      operationId: ApiUsersGet
+      consumes: []
+      produces:
+      - text/plain
+      - application/json
+      - text/json
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            uniqueItems: false
+            type: array
+            items:
+              "$ref": "#/definitions/User"
+    post:
+      tags:
+      - Users
+      operationId: ApiUsersPost
+      consumes:
+      - application/json-patch+json
+      - application/json
+      - text/json
+      - application/*+json
+      produces: []
+      parameters:
+      - name: value
+        in: body
+        required: false
+        schema:
+          $ref: '#definitions/UserEmail'
+      responses:
+        '200':
+          description: Success
+  "/api/Users/verify":
+    post:
+      tags:
+      - Users
+      operationId: ApiUsersVerifyPost
+      consumes:
+      - application/json-patch+json
+      - application/json
+      - text/json
+      - application/*+json
+      produces: []
+      parameters:
+      - name: value
+        in: body
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        format: int32
+        type: integer
+      email:
+        type: string
+      token:
+        type: string
+  UserEmail:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email```
+Message Input
+
+Message tldm
