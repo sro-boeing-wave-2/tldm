@@ -178,11 +178,11 @@ paths:
     post:
       summary: Adds a channel to a workspace
       parameters:
-      - in: query
-        name: channelId
-        required: true
+      - in: body
+        name: body
+        description: Add channel object
         schema:
-          type: integer
+          $ref: "#/definitions/channel"
       - in: query
         name: worspaceName
         required: true
@@ -264,11 +264,11 @@ paths:
     post:
       summary: Adds a user to a workspace
       parameters:
-      - name: userId
-        in: query
-        required: true
+      - in: body
+        name: body
+        description: Add a user object
         schema:
-          type: integer
+          $ref: "#/definitions/user"
       - in: query
         name: worspaceName
         required: true
@@ -304,18 +304,6 @@ paths:
     put:
       summary: Update user details in a workspace
       parameters:
-        - in: query
-          name: userId
-          required: true
-          schema:
-            type: integer
-          description: user id
-        - in: query
-          name: worspaceName
-          required: true
-          schema:
-            type: string
-          description: workspace name
         - in: body
           name: body
           description: Updated user object
