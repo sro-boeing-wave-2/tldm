@@ -13537,11 +13537,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\source\\repos\\tryingWithAngularChat\\tryingWithAngularChat\\tryingWithAngularChat.csproj",
+      "projectUniqueName": "D:\\final project\\tldm\\tryingWithAngularChat\\tryingWithAngularChat\\tryingWithAngularChat.csproj",
       "projectName": "tryingWithAngularChat",
-      "projectPath": "C:\\Users\\Admin\\source\\repos\\tryingWithAngularChat\\tryingWithAngularChat\\tryingWithAngularChat.csproj",
+      "projectPath": "D:\\final project\\tldm\\tryingWithAngularChat\\tryingWithAngularChat\\tryingWithAngularChat.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\source\\repos\\tryingWithAngularChat\\tryingWithAngularChat\\obj\\",
+      "outputPath": "D:\\final project\\tldm\\tryingWithAngularChat\\tryingWithAngularChat\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

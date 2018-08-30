@@ -13,7 +13,10 @@ namespace tryingWithAngularChat.Services
         Task DeleteWorkspace(string workspaceName);
         Task<List<Workspace>> GetAllWorkspaces();
         Task<Workspace> GetWorkspaceByName(string workspaceName);
+
+        // not implemented
         Task<Workspace> UpdateWorkspaceByName(string workspaceName);
+        //
          
         // channel related task
         Task<Channel> CreateChannel(Channel channel, string workspaceName);
