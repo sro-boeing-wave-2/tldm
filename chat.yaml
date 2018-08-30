@@ -324,7 +324,6 @@ paths:
       parameters:
       - in: query
         name: worspaceName
-        required: true
         schema:
           type: string
       description: workspace name
