@@ -1,0 +1,114 @@
+swagger: '2.0'
+info:
+  version: 0.0.0
+  title: Integration Micro Service
+  description: Integration API
+paths:
+  "/api/Registers":
+    get:
+      tags:
+      - Registers
+      operationId: ApiRegistersGet
+      consumes: []
+      produces:
+      - text/plain
+      - application/json
+      - text/json
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            uniqueItems: false
+            type: array
+            items:
+              "$ref": "#/definitions/Register"
+    post:
+      tags:
+      - Registers
+      operationId: ApiRegistersPost
+      consumes:
+      - application/json-patch+json
+      - application/json
+      - text/json
+      - application/*+json
+      produces: []
+      parameters:
+      - name: register
+        in: body
+        required: false
+        schema:
+          "$ref": "#/definitions/Register"
+      responses:
+        '200':
+          description: Success
+  "/api/Registers/{id}":
+    get:
+      tags:
+      - Registers
+      operationId: ApiRegistersByIdGet
+      consumes: []
+      produces: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int32
+      responses:
+        '200':
+          description: Success
+    put:
+      tags:
+      - Registers
+      operationId: ApiRegistersByIdPut
+      consumes:
+      - application/json-patch+json
+      - application/json
+      - text/json
+      - application/*+json
+      produces: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int32
+      - name: register
+        in: body
+        required: false
+        schema:
+          "$ref": "#/definitions/Register"
+      responses:
+        '200':
+          description: Success
+    delete:
+      tags:
+      - Registers
+      operationId: ApiRegistersByIdDelete
+      consumes: []
+      produces: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int32
+      responses:
+        '200':
+          description: Success
+definitions:
+  Register:
+    type: object
+    properties:
+      registrationId:
+        format: int32
+        type: integer
+      appName:
+        type: string
+      appInfo:
+        type: string
+      appDeveloper:
+        type: string
+      appUrl:
+        type: string
