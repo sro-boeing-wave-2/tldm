@@ -94,9 +94,30 @@ paths:
         404:
           description: User not added
 
+    delete:
+      summary: Remove a member from a channel
+      parameters:
+      - name: userName
+        in: query
+        required: true
+        schema:
+          type: string
+          format: email
+      - name: channelId
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: User removed
+        404:
+          description: User not found    
+       
+
   /channels:
     get:
-      summary: Returns list of channels user is part of
+      summary: Returns list of channels the user is part of
       parameters:
         - in: query
           name: userId
@@ -105,6 +126,7 @@ paths:
           description: userId (email)
         - in: query
           name: worspaceName
+          required: true
           schema:
             type: string
           description: workspace name
@@ -131,3 +153,81 @@ paths:
                   items: 
                     $ref: "#/definitions/message"
                 # $ref: "#/definitions/Channels"
+    
+    delete:
+      summary: Delete a channel from a workspace
+      parameters:
+        - in: query
+          name: channelId
+          required: true
+          schema:
+            type: integer
+          description: channel id
+        - in: query
+          name: worspaceName
+          required: true
+          schema:
+            type: string
+          description: workspace name
+      responses:
+        200:
+          description: Channel removed
+        404:
+          description: Channel not found
+    
+    post:
+      summary: Adds a channel to a workspace
+      parameters:
+      - name: channelId
+        in: query
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: worspaceName
+        required: true
+        schema:
+          type: string
+      responses:
+        201:
+          description: Channel is added
+        404:
+          description: Channel not added
+
+  /users:
+    get:
+      summary: Returns list of all users in a workspace
+      parameters:
+        - in: query
+          name: worspaceName
+          schema:
+            type: string
+          description: workspace name
+      responses:
+        200:
+          description: List of users
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/user"
+        404:
+          description: Workspace not found
+  /workspaces:
+    get:
+      summary: Returns list of all workspaces
+      responses:
+        200:
+          description: List of workspaces
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/workspace"
+        404:
+          description: Workspace not found
+
+
+                 
+                
+                   
+
+ 
