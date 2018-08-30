@@ -355,11 +355,12 @@ paths:
     post:
       summary: Create a new workspace
       parameters:
-      - in: body
-        name: body
-        description: Workspace object
+      - in: query
+        name: worspaceName
+        required: true
         schema:
-          $ref: "#/definitions/workspace"
+          type: string
+        description: workspace name
       responses:
         201:
           description: Workspace is created
