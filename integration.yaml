@@ -1,54 +1,54 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-  version: 0.0.0
-  title: Integration Micro Service
-  description: Integration API
+ title: Integration Microservice
+ description: Provides APIs for Integration Microservice
+ version: 0.0.0
+definitions:
+  Application:
+    type: object
+    properties:
+      id:
+        format: int32
+        type: integer
+      name:
+        type: string
+      info:
+        type: string
+      developer:
+        type: string
+      url:
+        type: string
 paths:
-  "/api/Registers":
-    get:
-      tags:
-      - Registers
-      operationId: ApiRegistersGet
-      consumes: []
-      produces:
-      - text/plain
-      - application/json
-      - text/json
-      parameters: []
-      responses:
-        '200':
-          description: Success
-          schema:
-            uniqueItems: false
-            type: array
-            items:
-              "$ref": "#/definitions/Register"
-    post:
-      tags:
-      - Registers
-      operationId: ApiRegistersPost
-      consumes:
-      - application/json-patch+json
-      - application/json
-      - text/json
-      - application/*+json
-      produces: []
-      parameters:
-      - name: register
+ /api/Register:
+   get:
+     summary: Gets all the integration services registered to the marketplace
+     tags:
+     - Application
+     responses:
+       200:
+         description: Returns all the integration services registered
+         schema:
+           type: array
+           items:
+              $ref: "#/definitions/Application"
+   post:
+    summary: Adds the current integration service to marketplace
+    tags:
+    - Application
+    parameters:
+      - name: application
         in: body
         required: false
         schema:
-          "$ref": "#/definitions/Register"
-      responses:
-        '200':
-          description: Success
-  "/api/Registers/{id}":
+          $ref: "#/definitions/Application"
+    responses:
+      200:
+        description: Success
+ /api/Registers/{id}:
     get:
+      summary: Getting the integration services based on id
       tags:
-      - Registers
-      operationId: ApiRegistersByIdGet
-      consumes: []
-      produces: []
+      - Application
       parameters:
       - name: id
         in: path
@@ -59,35 +59,27 @@ paths:
         '200':
           description: Success
     put:
+      summary: Updating the integration services based on id
       tags:
-      - Registers
-      operationId: ApiRegistersByIdPut
-      consumes:
-      - application/json-patch+json
-      - application/json
-      - text/json
-      - application/*+json
-      produces: []
+      - Application
       parameters:
-      - name: id
-        in: path
-        required: true
-        type: integer
-        format: int32
-      - name: register
-        in: body
-        required: false
-        schema:
-          "$ref": "#/definitions/Register"
+        - name: id
+          in: path
+          required: false
+          type: integer
+          format: int32
+        - name: application
+          in: body
+          required: false
+          schema:
+            $ref: "#/definitions/Application"
       responses:
-        '200':
+        "200":
           description: Success
     delete:
+      summary: Delete an integration service based on id
       tags:
-      - Registers
-      operationId: ApiRegistersByIdDelete
-      consumes: []
-      produces: []
+      - Application
       parameters:
       - name: id
         in: path
@@ -97,18 +89,3 @@ paths:
       responses:
         '200':
           description: Success
-definitions:
-  Register:
-    type: object
-    properties:
-      registrationId:
-        format: int32
-        type: integer
-      appName:
-        type: string
-      appInfo:
-        type: string
-      appDeveloper:
-        type: string
-      appUrl:
-        type: string
