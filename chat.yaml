@@ -178,8 +178,8 @@ paths:
     post:
       summary: Adds a channel to a workspace
       parameters:
-      - name: channelId
-        in: query
+      - in: query
+        name: channelId
         required: true
         schema:
           type: integer
@@ -194,6 +194,54 @@ paths:
         404:
           description: Channel not added
 
+  /channels/messages:
+    get:
+      summary: Returns list of messages in a channel
+      parameters:
+      - in: query
+        name: channelId
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: worspaceName
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: List of messages
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/message"
+        404:
+          description: Channel/Workspace not found
+      
+    delete:
+        summary: Delete a message from a channel
+        parameters:
+        - in: query
+          name: channelId
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: worspaceName
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: messageId
+          required: true
+          schema:
+            type: integer
+        responses:
+          200:
+            description: Message deleted
+          404:
+            description: Message not found
+          
   /users:
     get:
       summary: Returns list of all users in a workspace
@@ -284,7 +332,14 @@ paths:
 
   /workspaces:
     get:
-      summary: Returns list of all workspaces
+      summary: Returns list of all workspaces if no parameter given or by worksapce name
+      parameters:
+      - in: query
+        name: worspaceName
+        required: true
+        schema:
+          type: string
+      description: workspace name
       responses:
         200:
           description: List of workspaces
@@ -309,6 +364,21 @@ paths:
           description: Workspace removed
         404:
           description: workspace not found
+    
+    post:
+      summary: Create a new workspace
+      parameters:
+      - in: body
+        name: body
+        description: Workspace object
+        schema:
+          $ref: "#/definitions/workspace"
+      responses:
+        201:
+          description: Workspace is created
+        404:
+          description: Workspace not created
+
 
 
                  
