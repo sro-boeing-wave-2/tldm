@@ -212,6 +212,76 @@ paths:
               $ref: "#/definitions/user"
         404:
           description: Workspace not found
+
+    post:
+      summary: Adds a user to a workspace
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: worspaceName
+        required: true
+        schema:
+          type: string
+      responses:
+        201:
+          description: User is added
+        404:
+          description: User not added
+
+    delete:
+      summary: Delete a user from a workspace
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: user id
+        - in: query
+          name: worspaceName
+          required: true
+          schema:
+            type: string
+          description: workspace name
+      responses:
+        200:
+          description: User removed
+        404:
+          description: user not found
+    
+    put:
+      summary: Update user details in a workspace
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: user id
+        - in: query
+          name: worspaceName
+          required: true
+          schema:
+            type: string
+          description: workspace name
+        - in: body
+          name: body
+          description: Updated user object
+          schema:
+            $ref: "#/definitions/user"
+      responses:
+        200:
+          description: User updated
+          schema:
+            items:
+              $ref: "#/definitions/user"
+        404:
+          description: user not found
+
   /workspaces:
     get:
       summary: Returns list of all workspaces
@@ -224,6 +294,21 @@ paths:
               $ref: "#/definitions/workspace"
         404:
           description: Workspace not found
+
+    delete:
+      summary: Delete a workspace
+      parameters:
+        - in: query
+          name: worspaceName
+          required: true
+          schema:
+            type: string
+          description: workspace name
+      responses:
+        200:
+          description: Workspace removed
+        404:
+          description: workspace not found
 
 
                  
