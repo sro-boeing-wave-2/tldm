@@ -1,0 +1,16 @@
+<h3>Brilliant Bots</h3>
+<h4>Turn your conversation into action - Create a task, comment or follow-up from any TLDM messages with actions</h4>
+<mat-grid-list cols="3" rowHeight="300px" *ngIf="applications">
+  <mat-grid-tile *ngFor="let app of applications">
+    <mat-card class="example-card">
+      <mat-card-header>
+        <mat-card-title>{{app.name}}</mat-card-title>
+        <mat-card-subtitle>By {{app.developer}}</mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image [src]="app.logoUrl">
+      <mat-card-actions>
+        <button (click)="getDetails(app.id)" id="btn" mat-button>More Details</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>

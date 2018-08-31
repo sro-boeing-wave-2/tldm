@@ -1,0 +1,17 @@
+#align-right {
+  text-align: right;
+  width: 100%;
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.example-header-image {
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Cro_semicolon_plain.svg/2000px-Cro_semicolon_plain.svg.png');
+  background-size: cover;
+}

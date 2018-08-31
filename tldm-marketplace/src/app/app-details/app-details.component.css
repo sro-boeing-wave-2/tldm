@@ -1,0 +1,32 @@
+.main-card {
+  width: 40%;
+  height: 73%;
+}
+.info-card {
+  width: 70%;
+  height: 73%;
+}
+.example-header-image {
+  background-size: cover;
+}
+
+img {
+  padding-top : 10px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+button {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
