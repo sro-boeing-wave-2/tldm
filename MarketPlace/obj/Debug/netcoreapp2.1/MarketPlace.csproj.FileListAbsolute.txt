@@ -1,0 +1,14 @@
+D:\PRODUCT DEVELOPMENT\MarketPlace\bin\Debug\netcoreapp2.1\MarketPlace.deps.json
+D:\PRODUCT DEVELOPMENT\MarketPlace\bin\Debug\netcoreapp2.1\MarketPlace.runtimeconfig.json
+D:\PRODUCT DEVELOPMENT\MarketPlace\bin\Debug\netcoreapp2.1\MarketPlace.runtimeconfig.dev.json
+D:\PRODUCT DEVELOPMENT\MarketPlace\bin\Debug\netcoreapp2.1\MarketPlace.dll
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.csprojAssemblyReference.cache
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.csproj.CoreCompileInputs.cache
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.RazorAssemblyInfo.cache
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.RazorAssemblyInfo.cs
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.AssemblyInfoInputs.cache
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.AssemblyInfo.cs
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.RazorTargetAssemblyInfo.cache
+D:\PRODUCT DEVELOPMENT\MarketPlace\bin\Debug\netcoreapp2.1\MarketPlace.pdb
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.dll
+D:\PRODUCT DEVELOPMENT\MarketPlace\obj\Debug\netcoreapp2.1\MarketPlace.pdb
