@@ -6,7 +6,8 @@
  }
 
  .sidenavContent {
-  height: 300px;
+  height: 600px;
+  /* margin-left: 300px !important; */
   align-self: auto;
   align-content: space-around;
  }
@@ -25,4 +26,12 @@
 
  .message-input{
    margin-top: 260px;
+ }
+
+ /* .message-list{
+   text-align: left;
+ } */
+
+ .channel-name{
+   text-align: right;
  }

@@ -8,6 +8,7 @@
 
   </mat-toolbar-row>
 </mat-toolbar>
+
 <div style="text-align:center">
   <mat-sidenav-container class="example-container">
     <mat-sidenav #sidenav mode="side" opened>
@@ -26,12 +27,6 @@
             <mat-divider></mat-divider>
             <h3 mat-subheader class="tc-white">CHANNELS</h3>
 
-            <!-- <div *ngIf="channelArray.length > 0">
-              <div *ngFor="let channel of channelArray">
-                <a mat-list-item class="tc-white" (click)="getChannelName(channel)"><mat-icon class="tc-white" matListIcon>forum</mat-icon>
-                  {{channel.channelName}}</a>
-              </div>
-            </div> -->
             <div *ngIf="channelArray.length>0">
               <div *ngFor="let channel of channelArray" >
                 <a mat-list-item class="tc-white" (click)="getChannelName(channel)"><mat-icon class="tc-white" matListIcon>forum</mat-icon>
@@ -47,7 +42,7 @@
 
     <mat-sidenav-content class="sidenavContent">
       <mat-toolbar>
-        <mat-toolbar-row>
+        <mat-toolbar-row class="channel-name">
           <span>#{{channelName}}</span>
           <span class="example-spacer"></span>
           <!-- <mat-icon class="example-icon" (click)="showChannelSettings">settings</mat-icon>
@@ -58,10 +53,9 @@
       </mat-toolbar>
       <mat-card class="message-card">
         <div *ngIf="channelmessages.length > 0">
-          <div *ngFor="let message of channelmessages">
+          <mat-card *ngFor="let message of channelmessages" class="message-list">
             {{message}}
-            <mat-divider></mat-divider>
-          </div>
+          </mat-card>
         </div>
       </mat-card>
 
@@ -79,97 +73,10 @@
 
   </mat-sidenav-container>
 </div>
-<!-- <div>
-  <h2>Hello {{nick}}!</h2>
-</div> -->
-
-<!--
-<div class="container">
-
-  <form (ngSubmit)="sendMessage()" #chatForm="ngForm">
-    <div>
-      <label for="message">Message</label>
-      <input type="text" id="message" name="message" [(ngModel)]="message" required>
-    </div>
-    <button type="submit" id="sendmessage" [disabled]="!chatForm.valid">
-      Send
-    </button>
-  </form>
-</div> -->
-
-<!--
-<div class="container" style="float:left;" *ngIf="messages.length > 0">
-  <div *ngFor="let message of messages">
-    <span>{{message}}</span>
-  </div>
-</div>
-
-<div class="container" style="float:right;" id="id">
-  <button type="submit" (click)="getid()">
-    get connection id
-  </button>
-</div>
-
-<div class="container" style="float:right;">
-  <button type="submit" (click)="join()" id="nick1">
-    join a group
-  </button>
-</div>
 
 
 
-<div>
-  Enter group message ...
-  <div>
-    <input type="text" id="grpmsg" name="grpmsg" [(ngModel)]="grpmsg" required>
-  </div>
-  <button type="submit" (click)="sendMessageingrp()">
-    send message to group
-  </button>
-</div>
-
-<div class="container" style="float:right;" *ngIf="grpmsgs.length > 0">
-  <div *ngFor="let message of grpmsgs">
-    <span>{{message}}</span>
-  </div>
-</div>
-
-
-<div class="container" style="float:right;">
-  <button type="submit" (click)="leave()" id="nick">
-    leave a group
-  </button>
-</div>
-
-
-<br><br><br> -->
-
-
-<!-- <form [formGroup]="WorkSpaceForm" (ngSubmit)="createworkspace()">
-  <label>Create workspace:</label>
-  <input formControlName="workspaceName" [(ngModel)]="WorkspaceToCreate.workspaceName" placeholder="workspaceName">
-  <button type="submit">submit</button>
-</form>
-
-
-<br><br><br><br>
-<form [formGroup]="UserForm" (ngSubmit)="addusertoworkspace()">
-  <label>Enter FirstName:</label>
-  <input formControlName="firstName" placeholder="firstName">
-  <label>Enter LastName:</label>
-  <input formControlName="lastName" placeholder="lastName">
-  <label>Enter UserName:</label>
-  <input formControlName="userName" placeholder="userName">
-  <label>Enter Designation:</label>
-  <input formControlName="designation" placeholder="designation">
-  <label>Enter WorkspaceName:</label>
-  <input formControlName="workspaceName" placeholder="workspaceName">
-  <button type="submit">Add User</button>
-</form> -->
-
-
-
-<br><br><br><br>
+<!-- Getting details of user  -->
 
 <h1>
   Enter your email id
@@ -200,17 +107,6 @@
 <label>ChannelId:</label>
 <input type="text" id="channelId" name="channelId" [(ngModel)]="channelId" required>
 
-
-
-<!-- <h1>
-  Hello {{username}}
-</h1> -->
-<!-- <h2>
-  Press this to enter your general channel
-</h2>
-<button type="submit" (click)="startChannelCommunication()">
-  Broadcast @General
-</button> -->
 <div>
   <p>
     You are in {{workspaceName}} WorkSpace Your channelid is {{channelId}}
