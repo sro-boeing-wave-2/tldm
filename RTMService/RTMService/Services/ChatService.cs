@@ -92,7 +92,7 @@ namespace RTMService.Services
             _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
 
             // update channel in workspace
-            var resultWorkspace = GetWorkspaceByName(resultChannel.WorkspaceId);
+            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
             resultWorkspace.Channels.First(i => i.ChannelId == channelId).Users.Add(newUser);
             var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
             var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
