@@ -16,7 +16,7 @@ const httpOptions = {
 })
 export class ChatService {
 
-  private _chaturl = "https://localhost:5001/api/chat/workspaces";///////check port
+  private _chaturl = "http://localhost:5000/api/chat/workspaces";///////check port
 
   constructor(private http: HttpClient) { }
 

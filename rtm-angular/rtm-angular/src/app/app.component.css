@@ -1,0 +1,28 @@
+.example-container {
+  position: relative;
+  left: 0;
+  right: 0;
+  background: rgb(255, 255, 255);
+ }
+
+ .sidenavContent {
+  height: 300px;
+  align-self: auto;
+  align-content: space-around;
+ }
+
+ .example-drawer {
+  height: 500px;
+ }
+
+ .example-icon {
+  padding: 0 14px;
+ }
+
+ .example-spacer {
+  flex: 1 1 auto;
+ }
+
+ .message-input{
+   margin-top: 260px;
+ }

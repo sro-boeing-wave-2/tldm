@@ -1,9 +1,9 @@
 import {User} from './User';
 
 export class Message{
-  MessageId:string;
-  MessageBody:string;
-  Timestamp:string;
-  IsStarred:string;
-  Sender:User;
+  messageId:string;
+  messageBody:string;
+  timestamp:string;
+  isStarred:string;
+  sender:User;
  }

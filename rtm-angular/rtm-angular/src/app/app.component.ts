@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
   username:string;
   emailId:string;
   channelArray:Channel[];
+  channelName:string;
 
 
   // public sendMessage(): void {
@@ -88,59 +89,60 @@ export class AppComponent implements OnInit {
   ngOnInit() {
   }
 
-  WorkSpaceForm = this.fb.group({
-    workspaceId: [''],
-    workspaceName: [''],
-    channels: this.fb.array([])
-  });
-  UserForm = this.fb.group({
-    userId: [''],
-    firstName: [''],
-    lastName: [''],
-    userName: [''],
-    designation: [''],
-    workspaceName: ['']
-  });
-  MessageForm = this.fb.group({
-    messageId: [''],
-    messageBody: [''],
-    timeStamp: [''],
-    isStarred: [''],
-    sender: this.UserForm
-  });
-  ChannelForm = this.fb.group({
-    channelId: [''],
-    channelName: [''],
-    users: this.fb.array([]),
-    messages: this.fb.array([]),
-    admin: this.UserForm
-  });
-  get Channels() {
-    return this.WorkSpaceForm.get('channels') as FormArray;
-  }
-  get Users() {
-    return this.ChannelForm.get('users') as FormArray;
-  }
-  get Messages() {
-    return this.ChannelForm.get('messages') as FormArray;
-  }
-  addChannels() {
-    this.Channels.push(this.ChannelForm);
-  }
-  addUsers() {
-    this.Channels.push(this.UserForm);
-  }
-  addMessages() {
-    this.Channels.push(this.MessageForm);
-  }
+  // WorkSpaceForm = this.fb.group({
+  //   workspaceId: [''],
+  //   workspaceName: [''],
+  //   channels: this.fb.array([])
+  // });
+  // UserForm = this.fb.group({
+  //   userId: [''],
+  //   firstName: [''],
+  //   lastName: [''],
+  //   userName: [''],
+  //   designation: [''],
+  //   workspaceName: ['']
+  // });
+  // MessageForm = this.fb.group({
+  //   messageId: [''],
+  //   messageBody: [''],
+  //   timeStamp: [''],
+  //   isStarred: [''],
+  //   sender: this.UserForm
+  // });
+  // ChannelForm = this.fb.group({
+  //   channelId: [''],
+  //   channelName: [''],
+  //   users: this.fb.array([]),
+  //   messages: this.fb.array([]),
+  //   admin: this.UserForm
+  // });
+  // get Channels() {
+  //   return this.WorkSpaceForm.get('channels') as FormArray;
+  // }
+  // get Users() {
+  //   return this.ChannelForm.get('users') as FormArray;
+  // }
+  // get Messages() {
+  //   return this.ChannelForm.get('messages') as FormArray;
+  // }
+  // addChannels() {
+  //   this.Channels.push(this.ChannelForm);
+  // }
+  // addUsers() {
+  //   this.Channels.push(this.UserForm);
+  // }
+  // addMessages() {
+  //   this.Channels.push(this.MessageForm);
+  // }
 
-  WorkspaceToCreate: Workspace;
+  // WorkspaceToCreate: Workspace;
 
   constructor(
     private chatservice: ChatService,
     private fb: FormBuilder) {
     //initializing the workspace to be created
-    this.WorkspaceToCreate = new Workspace();
+    //this.WorkspaceToCreate = new Workspace();
+    this.channelArray = new Array<Channel>();
     //this.nick = window.prompt('Your name:', '');
     this._hubConnection = new HubConnectionBuilder()
       .withUrl('http://localhost:5000/chat')
@@ -191,21 +193,21 @@ export class AppComponent implements OnInit {
     console.log(this._hubConnection);
   }
 
-  createworkspace() {
-    console.log(this.WorkSpaceForm.value);
-    this.chatservice.CreateWorkspace(this.WorkSpaceForm.value)
-      .subscribe(s => console.log(s));
-  }
+  // createworkspace() {
+  //   console.log(this.WorkSpaceForm.value);
+  //   this.chatservice.CreateWorkspace(this.WorkSpaceForm.value)
+  //     .subscribe(s => console.log(s));
+  // }
 
-  addusertoworkspace() {
-    console.log("i am in addusertoworkspace");
-    this.chatservice.addUserToWorkSpace(this.UserForm.value)
-      .subscribe(s => console.log(s));
-  }
+  // addusertoworkspace() {
+  //   console.log("i am in addusertoworkspace");
+  //   this.chatservice.addUserToWorkSpace(this.UserForm.value)
+  //     .subscribe(s => console.log(s));
+  // }
   startChannelCommunication(): void {
     console.log("in startChannelCommunication ");
     this.chatservice.getChannelIdByWorkspaceName(this.workspaceName)
-      .subscribe(s => this.channelId = s.ChannelId);
+      .subscribe(s => this.channelId = s.channelId);
   }
   // getUserWorkspace() {
   //   console.log("getting user workspace");
@@ -219,7 +221,16 @@ export class AppComponent implements OnInit {
   ListAllChannels(){
     console.log("in list channel function");
     this.chatservice.getUserChannels(this.emailId,this.workspaceName)
-    .subscribe(s => console.log(s));
+    .subscribe(s => {
+      console.log(s);
+      this.channelArray = s;});
+  }
+  getChannelName(channel: Channel){
+    console.log("get channel id");
+    console.log(channel.channelName);
+    this.channelName = channel.channelName;
+    this.channelId = channel.channelId;
+    console.log(this.channelName);
   }
 
 

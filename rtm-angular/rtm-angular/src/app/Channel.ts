@@ -2,10 +2,10 @@ import {Message} from './Message';
 import {User} from './User';
 
 export class Channel{
-  ChannelId:string;
-  ChannelName:string;
-  Users:User[];
-  Admin:User;
-  Messages:Message[];
-  WorkspaceId:string;
+  channelId:string;
+  channelName:string;
+  users:User[];
+  admin:User;
+  messages:Message[];
+  workspaceId:string;
  }
