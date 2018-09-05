@@ -9,6 +9,7 @@ namespace RTMService.Models
 {
     public class User
     {
+       
         [BsonRepresentation(BsonType.ObjectId)]
         public string UserId { get; set; }
 

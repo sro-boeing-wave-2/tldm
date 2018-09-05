@@ -35,7 +35,7 @@ namespace RTMService.Services
 
         //// user related task
         List<User> GetAllUsersInWorkspace(string workspaceName);
-        User AddUserToWorkspace(User user, string workspaceName);  ////????? 
+        //User AddUserToWorkspace(User user, string workspaceName);  ////????? 
         User GetUserById(string emailid);
         //Task DeleteUserFromWorkspace(string workspaceName, int userId);
         //Task UpdateUserInWorkspace(User user);

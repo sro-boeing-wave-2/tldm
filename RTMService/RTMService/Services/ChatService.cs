@@ -107,15 +107,15 @@ namespace RTMService.Services
             return resultWorkspace.Users;
         }
 
-        public User AddUserToWorkspace(User user, string workspaceName)
-        {
-            _dbUser.GetCollection<User>("User").Save(user);
-            var resultWorkspace = GetWorkspaceByName(workspaceName);
-            var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceName, workspaceName);
-            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
-            return user;
-        }
+        //public User AddUserToWorkspace(User user, string workspaceName)
+        //{
+        //    _dbUser.GetCollection<User>("User").Save(user);
+        //    var resultWorkspace = GetWorkspaceByName(workspaceName);
+        //    var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceName, workspaceName);
+        //    var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
+        //    _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
+        //    return user;
+        //}
 
         //public Channel GetGeneralChannelIdByWorkSpaceName(string workSpaceName)
         //{

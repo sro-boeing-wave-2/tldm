@@ -14,7 +14,7 @@ namespace RTMService.Models
             this.Channels = new List<Channel>();
             this.Users = new List<User>();
         }
-
+        
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string WorkspaceId { get; set; }

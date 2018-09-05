@@ -25,7 +25,7 @@ namespace RTMService.Controllers
         // creating a workspace
         [HttpPost]
         [Route("workspaces")]
-        public IActionResult CreateWorkspace([FromBody] Workspace workspace) // frombody workspace object or string name
+        public IActionResult CreateWorkspace([FromBody] dynamic workspace) // frombody workspace object or string name
         {
             if (!ModelState.IsValid)
             {
