@@ -89,6 +89,7 @@ export class AddChannelComponent implements OnInit {
     console.log("get list of users in workspace");
     this.chatService.getAllUsersInWorkspace(this.workspaceName)
       .subscribe(s => this.allUsers = s);
+      console.log(this.allUsers);
   }
 
   private _filter(value: User): User[] {
