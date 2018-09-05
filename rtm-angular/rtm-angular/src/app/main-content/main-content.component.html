@@ -1,0 +1,125 @@
+<div style="text-align:center">
+    <mat-sidenav-container class="example-container">
+      <mat-sidenav #sidenav mode="side" opened>
+        <mat-toolbar>
+          <mat-toolbar-row>
+            <span>WS: {{workspaceName}}</span>
+          </mat-toolbar-row>
+          <mat-toolbar-row>
+            <span>User: {{emailId}}</span>
+          </mat-toolbar-row>
+        </mat-toolbar>
+
+        <mat-drawer-container class="example-drawer">
+          <mat-drawer mode="side" opened>
+            <mat-nav-list td-sidenav-content class="bgc-purple-900">
+              <mat-divider></mat-divider>
+              <h3 mat-subheader class="tc-white">CHANNELS
+                <a>
+                  <mat-icon class="example-icon" (click)=Channel()>playlist_add</mat-icon>
+                </a>
+              </h3>
+
+
+              <div *ngIf="channelArray.length>0">
+                <div *ngFor="let channel of channelArray" >
+                  <a mat-list-item class="tc-white" (click)="getChannelName(channel)"><mat-icon class="tc-white" matListIcon>forum</mat-icon>
+                    {{channel.channelName}}</a>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+
+            </mat-nav-list>
+          </mat-drawer>
+        </mat-drawer-container>
+      </mat-sidenav>
+
+      <mat-sidenav-content class="sidenavContent">
+        <mat-toolbar>
+          <mat-toolbar-row class="channel-name">
+            <div>#{{channelName}}
+
+            </div>
+            <span class="example-spacer"></span>
+            <!-- <mat-icon class="example-icon" (click)="showChannelSettings">settings</mat-icon>
+            <mat-icon class="example-icon" (click)="toggleChannelDetails()"> group </mat-icon>
+            <mat-icon class="example-icon" (click)="toggleChannelDetails()"> search </mat-icon> -->
+            <!-- <input #searchBox id="search-box" (keyup)="search(searchBox.value)" placeholder="Search Channel" /> -->
+          </mat-toolbar-row>
+        </mat-toolbar>
+        <mat-card class="message-card">
+          <div *ngIf="channelmessages.length > 0">
+            <mat-card *ngFor="let message of channelmessages" class="message-list">
+              {{message}}
+            </mat-card>
+          </div>
+        </mat-card>
+
+        <form>
+          <mat-card class="message-input">
+            <mat-form-field>
+              <input matInput placeholder="Type your message" type="text" id="channelmessage" name="channelmessage" [(ngModel)]="channelmessage"
+                required>
+            </mat-form-field>
+            <button mat-button class="send-button" (click)="sendMessageInChannel()"> <mat-icon>send</mat-icon> </button>
+          </mat-card>
+        </form>
+
+      </mat-sidenav-content>
+
+    </mat-sidenav-container>
+  </div>
+
+
+
+  <!-- Getting details of user  -->
+
+  <h1>
+    Enter your email id
+  </h1>
+  <label>EmailId:</label>
+  <input type="text" id="emailId" name="emailId" [(ngModel)]="emailId" required>
+  <h1>
+    Enter your Workspace Name
+  </h1>
+  <label>WorkspaceName:</label>
+  <input type="text" id="workspaceName" name="workspaceName" [(ngModel)]="workspaceName" required>
+  <button type="submit" (click)="ListAllChannels()">
+    See Your Channels
+  </button>
+
+  <div *ngIf="channelArray.length>0">
+    <ul *ngFor="let channel of channelArray" >
+      <li>
+        {{channel.channelName}} -> {{channel.channelId}}
+      </li>
+    </ul>
+  </div>
+
+
+  <h1>
+    Enter your channel id to chat in channel
+  </h1>
+  <label>ChannelId:</label>
+  <input type="text" id="channelId" name="channelId" [(ngModel)]="channelId" required>
+
+  <div>
+    <p>
+      You are in {{workspaceName}} WorkSpace Your channelid is {{channelId}}
+    </p>
+  </div>
+  <div>
+    Enter Channel message ...
+    <div>
+      <input type="text" id="channelmessage" name="channelmessage" [(ngModel)]="channelmessage" required>
+    </div>
+    <button type="submit" (click)="sendMessageInChannel()">
+      send message in general channel
+    </button>
+  </div>
+
+  <div class="container" style="float:left;" *ngIf="channelmessages.length > 0">
+    <div *ngFor="let message of channelmessages">
+      <span>{{message}}</span>
+    </div>
+  </div>

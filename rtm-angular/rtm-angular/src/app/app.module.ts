@@ -46,10 +46,12 @@ import {
   MatTreeModule
 } from '@angular/material';
 import { AddChannelComponent } from './add-channel/add-channel.component';
+import { MainContentComponent } from './main-content/main-content.component';
 @NgModule({
   declarations: [
     AppComponent,
-    AddChannelComponent
+    AddChannelComponent,
+    MainContentComponent
   ],
   imports: [
     AppRoutingModule,
