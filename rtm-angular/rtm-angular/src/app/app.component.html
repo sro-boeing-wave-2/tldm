@@ -25,7 +25,12 @@
         <mat-drawer mode="side" opened>
           <mat-nav-list td-sidenav-content class="bgc-purple-900">
             <mat-divider></mat-divider>
-            <h3 mat-subheader class="tc-white">CHANNELS</h3>
+            <h3 mat-subheader class="tc-white">CHANNELS
+              <a>
+                <mat-icon class="example-icon" (click)=Channel()>playlist_add</mat-icon>
+              </a>
+            </h3>
+
 
             <div *ngIf="channelArray.length>0">
               <div *ngFor="let channel of channelArray" >
@@ -43,7 +48,9 @@
     <mat-sidenav-content class="sidenavContent">
       <mat-toolbar>
         <mat-toolbar-row class="channel-name">
-          <span>#{{channelName}}</span>
+          <div>#{{channelName}}
+
+          </div>
           <span class="example-spacer"></span>
           <!-- <mat-icon class="example-icon" (click)="showChannelSettings">settings</mat-icon>
           <mat-icon class="example-icon" (click)="toggleChannelDetails()"> group </mat-icon>
@@ -127,3 +134,5 @@
     <span>{{message}}</span>
   </div>
 </div>
+
+<router-outlet></router-outlet>

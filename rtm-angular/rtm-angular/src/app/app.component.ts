@@ -4,6 +4,7 @@ import { ChatService } from '../app/chat.service';
 import { FormGroup, FormControl, FormBuilder, FormArray } from '@angular/forms';
 import { Workspace } from './Workspace';
 import { Channel } from './Channel';
+import { ActivatedRoute,Router } from '@angular/router';
 import { User } from './User';
 import { Message } from './Message';
 import { Observable } from 'rxjs';
@@ -28,6 +29,14 @@ export class AppComponent implements OnInit {
   emailId:string;
   channelArray:Channel[];
   channelName:string;
+  // public sampleChannel={
+  //   "channelId":"";
+  // "channelName":"";
+  // "users":User[];
+  // "admin":User;
+  // messages:Message[];
+  // workspaceId:string;
+  // }
 
 
 
@@ -52,6 +61,7 @@ export class AppComponent implements OnInit {
 
 
   constructor(
+    private router:Router,
     private chatservice: ChatService,
     private fb: FormBuilder) {
     this.channelArray = new Array<Channel>();
@@ -101,6 +111,10 @@ export class AppComponent implements OnInit {
     this.channelmessages = [];
   }
 
+Channel()
+{
+this.router.navigate(['addChannel']);
 
+}
 
 }

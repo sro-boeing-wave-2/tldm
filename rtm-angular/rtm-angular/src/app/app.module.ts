@@ -12,6 +12,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AppRoutingModule } from './/app-routing.module';
+import { ChatService } from './chat.service';
+
 import {
   MatAutocompleteModule,
   MatBadgeModule,
@@ -42,11 +45,14 @@ import {
   MatTooltipModule,
   MatTreeModule
 } from '@angular/material';
+import { AddChannelComponent } from './add-channel/add-channel.component';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AddChannelComponent
   ],
   imports: [
+    AppRoutingModule,
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -90,7 +96,7 @@ import {
     MatTooltipModule,
     MatTreeModule
   ],
-  providers: [],
+  providers: [ChatService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

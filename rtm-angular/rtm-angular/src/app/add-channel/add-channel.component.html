@@ -1,0 +1,61 @@
+<p>
+  Hi
+</p>
+
+<!-- <mat-card class="add-new-channel">
+    <mat-card-title>
+      Create a channel
+    </mat-card-title>
+
+    <mat-card-content>
+      <form [formGroup]="AddChannelForm" (ngSubmit)="addNewChannel()">
+        <table>
+          <tr>
+            <td>
+              <mat-form-field>
+                <label>Channel Name:</label>
+                <input matInput formControlName="channelName" placeholder="# e.g. MarketTeam">
+              </mat-form-field>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div formArrayName="users">
+                <h3>Members</h3>
+                <a>AddUser</a>
+                 (click)="getListOfUsersInWorkspace()"
+
+                <mat-chip-list #chipList>
+                  <mat-chip *ngFor="let user of users"
+                  [selectable]="selectable"
+                  [removable]="removable"
+                  (removed)=remove(user)>
+                  {{user}}
+                  <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                  </mat-chip>
+
+                  <input
+                  placeholder="Search by Name"
+                  #UserInput
+                  [formControl]="userCtrl"
+                  [matAutocomplete]="auto"
+                  [matChipInputFor]="chipLast"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="addOnBlur"
+                  (matChipInputTokenEnd)="add($event)">
+                </mat-chip-list>
+
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                  <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                    {{user.firstName}}
+                  </mat-option>
+                </mat-autocomplete>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </mat-card-content>
+  </mat-card>
+   -->

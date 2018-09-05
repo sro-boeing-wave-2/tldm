@@ -56,6 +56,13 @@ export class ChatService {
     );
   }
 
+  getAllUsersInWorkspace(workspaceName:string):Observable<User[]>{
+    const url = "http://localhost:5000/api/chat/user";
+    return this.http.get<User[]>(`${url}/${workspaceName}`).pipe(
+      catchError(this.handleError<any>('getAllUsersInWorkspace'))
+    );
+  }
+
 
 
 
