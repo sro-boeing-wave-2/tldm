@@ -19,7 +19,7 @@ namespace RTMService.Services
 
         public ChatService()
         {
-            _client = new MongoClient("mongodb://localhost:27017");
+            _client = new MongoClient("mongodb://db/admindatabase");
             _server = _client.GetServer();
             _dbWorkSpace = _server.GetDatabase("AllWorkspace");
             _dbChannel = _server.GetDatabase("AllChannels");

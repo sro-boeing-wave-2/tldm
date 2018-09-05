@@ -4,14 +4,15 @@ services:
   web:
     build: .
     container_name: RTM
+    build: .
     ports:
-      - "8000:5000"
+      - "80:80"
     depends_on:
-      - mongodb
+      - db
     
-  mongodb:
-    image: mongo
-    container_name: mongodb
+  db:
+    image: "mongo:latest"
+    container_name: mongodbnew
     ports:
       - "27017:27017"
 

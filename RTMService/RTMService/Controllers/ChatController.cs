@@ -188,8 +188,8 @@ namespace RTMService.Controllers
 
 
         // getting all channels a user is part of in a workspace by workspace name and emailid
-        [HttpGet]
-        [Route("workspaces/{workspaceName}/{emailId}")]
+        [HttpPost]
+        [Route("workspaces/{workspaceName}")]
         public IActionResult GetAllChannelsOfUserInWorkSpace(string workspaceName, DummyUserAccount user)
         {
             if (!ModelState.IsValid)
