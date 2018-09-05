@@ -9,7 +9,7 @@ namespace RTMService.Models
 {
     public class User
     {
-       
+        [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string UserId { get; set; }
 
@@ -22,7 +22,5 @@ namespace RTMService.Models
         [BsonElement("emailId")]
         public string EmailId { get; set; }
 
-        [BsonElement("designation")]
-        public string Designation { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace RTMService.Services
     public interface IChatService
     {
         // workspace related task
-        Workspace CreateWorkspace(Workspace workspace);
+        Workspace CreateWorkspace(DummyWorkspace workspace);
         void DeleteWorkspace(string workspaceName);
         IEnumerable<Workspace> GetAllWorkspaces();
         Workspace GetWorkspaceById(string id);
@@ -35,7 +35,7 @@ namespace RTMService.Services
 
         //// user related task
         List<User> GetAllUsersInWorkspace(string workspaceName);
-        //User AddUserToWorkspace(User user, string workspaceName);  ////????? 
+        User AddUserToWorkspace(User user, string workspaceName);  ////????? 
         User GetUserById(string emailid);
         //Task DeleteUserFromWorkspace(string workspaceName, int userId);
         //Task UpdateUserInWorkspace(User user);

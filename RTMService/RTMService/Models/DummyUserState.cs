@@ -7,7 +7,7 @@ namespace RTMService.Models
 {
     public class DummyUserState
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string EmailId { get; set; }
         public bool IsJoined { get; set; }
         public string Otp { get; set; }

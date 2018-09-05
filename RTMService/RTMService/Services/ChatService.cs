@@ -46,10 +46,36 @@ namespace RTMService.Services
             var result = Query<Workspace>.EQ(p => p.WorkspaceName, workspaceName);
             return _dbWorkSpace.GetCollection<Workspace>("Workspace").FindOne(result);
         }
-        public Workspace CreateWorkspace(Workspace workSpace)
+        public Workspace CreateWorkspace(DummyWorkspace workSpace)
         {
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Save(workSpace);
-            return workSpace;
+            Workspace newWorkspace = new Workspace
+            {
+                WorkspaceId = workSpace.Id,
+                WorkspaceName = workSpace.WorkspaceName
+            };
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Save(newWorkspace);
+            User user = new User
+            {
+                UserId = workSpace.UserWorkspaces[0].UserAccount.Id,
+                EmailId = workSpace.UserWorkspaces[0].UserAccount.EmailId,
+                FirstName = workSpace.UserWorkspaces[0].UserAccount.FirstName,
+                LastName = workSpace.UserWorkspaces[0].UserAccount.LastName
+            };
+            _dbUser.GetCollection<User>("User").Save(user);
+            AddUserToWorkspace(user, newWorkspace.WorkspaceName);
+            foreach(var channel in workSpace.Channels)
+            {
+                Channel newChannel = new Channel
+                {
+                    ChannelName = channel.ChannelName,
+                    Admin = user,
+                    WorkspaceId = newWorkspace.WorkspaceId
+                };
+                newChannel.Users.Add(user);
+                CreateChannel(newChannel, newChannel.WorkspaceId);
+            }
+
+             return GetWorkspaceByName(workSpace.WorkspaceName);
         }
         public void DeleteWorkspace(string id)
         {
@@ -107,15 +133,16 @@ namespace RTMService.Services
             return resultWorkspace.Users;
         }
 
-        //public User AddUserToWorkspace(User user, string workspaceName)
-        //{
-        //    _dbUser.GetCollection<User>("User").Save(user);
-        //    var resultWorkspace = GetWorkspaceByName(workspaceName);
-        //    var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceName, workspaceName);
-        //    var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-        //    _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
-        //    return user;
-        //}
+        public User AddUserToWorkspace(User user, string workspaceName)
+        {
+            _dbUser.GetCollection<User>("User").Save(user);
+            var resultWorkspace = GetWorkspaceByName(workspaceName);
+            resultWorkspace.Users.Add(user);
+            var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceName, workspaceName);
+            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
+            return user;
+        }
 
         //public Channel GetGeneralChannelIdByWorkSpaceName(string workSpaceName)
         //{
