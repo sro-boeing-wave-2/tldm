@@ -92,6 +92,22 @@ namespace RTMService.Controllers
             iservice.DeleteChannel(ChannelToDelete.ChannelId);
             return new OkResult();
         }
+        // deleting a user from channel
+        [HttpDelete]
+        [Route("workspaces/channels/{channelId:length(24)}/{emailId}")]
+        public IActionResult DeleteuserFromChannel(string channelId, string emailId)
+        {
+            var ChannelToDelete = iservice.GetChannelById(channelId);
+            if (ChannelToDelete == null)
+            {
+                return NotFound();
+            }
+
+            iservice.DeleteUserFromChannel(emailId,channelId);
+            return new OkResult();
+        }
+
+
         // creating a Channel
         [HttpPut]
         [Route("workspaces/{id:length(24)}")]
@@ -174,26 +190,26 @@ namespace RTMService.Controllers
         // getting all channels a user is part of in a workspace by workspace name and emailid
         [HttpGet]
         [Route("workspaces/{workspaceName}/{emailId}")]
-        public IActionResult GetAllChannelsOfUserInWorkSpace(string workspaceName, string emailId)
+        public IActionResult GetAllChannelsOfUserInWorkSpace(string workspaceName, DummyUserAccount user)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            List<Channel> channels = iservice.GetAllUserChannelsInWorkSpace(workspaceName, emailId);
+            List<Channel> channels = iservice.GetAllUserChannelsInWorkSpace(workspaceName, user);
             return new ObjectResult(channels);
         }
 
         // get user by id
         [HttpGet]
         [Route("user/{userId}")]
-        public IActionResult GetUserById(string userId)
+        public IActionResult GetUserByEmail(string userEmail)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var user = iservice.GetUserById(userId);
+            var user = iservice.GetUserByEmail(userEmail);
             return new ObjectResult(user);
         }
 

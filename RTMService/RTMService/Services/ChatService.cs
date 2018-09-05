@@ -120,12 +120,39 @@ namespace RTMService.Services
             return newUser;
 
         }
+        public void DeleteChannel(string channelId)
+        {
+            var channelresult = GetChannelById(channelId);
+            var result = Query<Channel>.EQ(e => e.ChannelId, channelId);
+            var operation = _dbChannel.GetCollection<Channel>("Channel").Remove(result);
+            var workspace = GetWorkspaceById(channelresult.WorkspaceId);
+            var channelToDelete = workspace.Channels.Find(c => c.ChannelId == channelId);
+            workspace.Channels.Remove(channelToDelete);
+            var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, channelresult.WorkspaceId);
+            var operationWorkspace = Update<Workspace>.Replace(workspace);
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
 
-        //public void DeleteUserFromChannel(string userName, int channelId)
-        //{
-        //    var result = Query<Channel>.EQ(e => e.channelId, channelId);
-        //    var operation = _db.GetCollection<Workspace>("Workspace").Remove(result);
-        //}
+        }
+        //not working 
+        public void DeleteUserFromChannel(string emailId, string channelId)
+        {
+            var channel = GetChannelById(channelId);
+
+            var resultUser = channel.Users.Find(u => u.EmailId == emailId);//GetUserByEmail(emailId);
+
+            channel.Users.Remove(resultUser);
+            var resultChannel = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
+            var operationChannel = Update<Channel>.Replace(channel);
+            _dbChannel.GetCollection<Channel>("Channel").Update(resultChannel, operationChannel);
+
+            var resultWorkspace = GetWorkspaceById(channel.WorkspaceId);
+            resultWorkspace.WorkspaceId = channel.WorkspaceId;
+            var userToDelete=  resultWorkspace.Channels.Find(c => c.ChannelId == channelId).Users.Find(u => u.EmailId == emailId);
+            resultWorkspace.Channels.Find(c => c.ChannelId == channelId).Users.Remove(userToDelete);
+            var result = Query<Workspace>.EQ(pd => pd.WorkspaceId, channel.WorkspaceId);
+            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(result, operationWorkspace);
+        }
 
         public List<User> GetAllUsersInWorkspace(string workspaceName)
         {
@@ -153,10 +180,10 @@ namespace RTMService.Services
 
 
 
-        public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailid)
+        public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, DummyUserAccount user)
         {
             var workspace = GetWorkspaceByName(workSpaceName);
-            var listOfChannels = workspace.Channels.FindAll(m => m.Users.Any(u => u.EmailId == emailid));
+            var listOfChannels = workspace.Channels.FindAll(m => m.Users.Any(u => u.EmailId == user.EmailId));
             return listOfChannels;
         }
 
@@ -166,24 +193,12 @@ namespace RTMService.Services
             return workspace.Channels;
         }
 
-        public User GetUserById(string emailid)
+        public User GetUserByEmail(string emailId)
         {
-            var result = Query<User>.EQ(p => p.EmailId, emailid);
+            var result = Query<User>.EQ(p => p.EmailId, emailId);
             return _dbUser.GetCollection<User>("User").FindOne(result);
         }
 
-        public void DeleteChannel(string channelId)
-        {
-            var channelresult = GetChannelById(channelId);
-            var result = Query<Channel>.EQ(e => e.ChannelId, channelId);
-            var operation = _dbChannel.GetCollection<Channel>("Channel").Remove(result);
-            var workspace = GetWorkspaceById(channelresult.WorkspaceId);
-            var channelToDelete = workspace.Channels.Find(c => c.ChannelId == channelId);
-            workspace.Channels.Remove(channelToDelete);
-            var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, channelresult.WorkspaceId);
-            var operationWorkspace = Update<Workspace>.Replace(workspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
-
-        }
+        
     }
 }
