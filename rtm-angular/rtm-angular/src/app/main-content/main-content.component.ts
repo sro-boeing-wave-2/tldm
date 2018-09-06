@@ -40,9 +40,9 @@ export class MainContentComponent implements OnInit {
 
 
 
-  public joinChannel(): void {
+  public joinChannel(channelId:string): void {
     this._hubConnection
-      .invoke('JoinChannel', this.channelId)
+      .invoke('JoinChannel', channelId)
       .catch(err => console.error(err));
     console.log("in join Channel");
   }
@@ -68,7 +68,9 @@ export class MainContentComponent implements OnInit {
     .subscribe(s => {
       console.log(s);
       this.channelArray = s;
+     // this.channelArray.forEach(s => this.joinChannel(s.channelId));
     });
+
 
     // this.chatservice.getUserChannels("d@gmail.com", "Stack")
     // .subscribe(s => {
@@ -90,7 +92,7 @@ export class MainContentComponent implements OnInit {
       .build();
 
     this._hubConnection.on('JoinChannel', (channelId: string) => {
-      console.log("in joingroup method" + channelId);
+      console.log("in joinchannel method" + channelId);
     });
 
 
@@ -129,6 +131,7 @@ export class MainContentComponent implements OnInit {
     this.channelId = channel.channelId;
     console.log(this.channelName);
     this.channelmessages = [];
+    this.joinChannel(channel.channelId);
   }
 
 Channel()
