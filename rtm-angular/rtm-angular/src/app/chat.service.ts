@@ -16,7 +16,7 @@ const httpOptions = {
 })
 export class ChatService {
 
-  private _chaturl = "http://localhost:5000/api/chat/workspaces";///////check port
+  private _chaturl = "http://172.23.238.230:5000/api/chat/workspaces";///////check port
 
   constructor(private http: HttpClient) { }
 
@@ -44,7 +44,7 @@ export class ChatService {
   }
 
   getUserById(userid:string):Observable<User>{
-    const url = "http://localhost:5000/api/chat/user"
+    const url = "http://172.23.238.230:5000/api/chat/user"
     return this.http.get<User>(`${url}/${userid}`).pipe(
       catchError(this.handleError<any>('getUserById'))
     );
@@ -57,7 +57,7 @@ export class ChatService {
   }
 
   getAllUsersInWorkspace(workspaceName:string):Observable<User[]>{
-    const url = "http://localhost:5000/api/chat/user";
+    const url = "http://172.23.238.230:5000/api/chat/user";
     return this.http.get<User[]>(`${url}/${workspaceName}`).pipe(
       catchError(this.handleError<any>('getAllUsersInWorkspace'))
     );

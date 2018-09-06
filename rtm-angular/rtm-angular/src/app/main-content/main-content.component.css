@@ -6,16 +6,20 @@
  }
 
  .sidenavContent {
-  height: 600px;
+  height: auto;
   /* margin-left: 300px !important; */
   align-self: auto;
   align-content: space-around;
   text-align: center;
  }
 
- .example-drawer {
-  height: 500px;
+ .sidenav-drawer {
+  height: 460px;
  }
+
+ /* .side-nav-drawer{
+   width: 100%;
+ } */
 
  .example-icon {
   padding: 0 14px;
@@ -35,4 +39,13 @@
 
  .channel-name{
    text-align: right;
+ }
+
+ .add-channel-icon{
+   padding: 0 14px;
+   cursor: pointer;
+ }
+
+ .channel-heading{
+   justify-content: space-between;
  }

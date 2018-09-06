@@ -10,13 +10,13 @@
           </mat-toolbar-row>
         </mat-toolbar>
 
-        <mat-drawer-container class="example-drawer">
-          <mat-drawer mode="side" opened>
+        <mat-drawer-container class="sidenav-drawer">
+          <mat-drawer mode="side" opened class="side-nav-drawer">
             <mat-nav-list td-sidenav-content class="bgc-purple-900">
               <mat-divider></mat-divider>
-              <h3 mat-subheader class="tc-white">CHANNELS
+              <h3 mat-subheader class="channel-heading">CHANNELS
                 <a>
-                  <mat-icon class="example-icon" (click)=Channel()>playlist_add</mat-icon>
+                  <mat-icon class="add-channel-icon" (click)=Channel()>playlist_add</mat-icon>
                 </a>
               </h3>
 
@@ -74,7 +74,7 @@
 
   <!-- Getting details of user  -->
 
-  <h1>
+  <!-- <h1>
     Enter your email id
   </h1>
   <label>EmailId:</label>
@@ -122,4 +122,4 @@
     <div *ngFor="let message of channelmessages">
       <span>{{message}}</span>
     </div>
-  </div>
+  </div> -->

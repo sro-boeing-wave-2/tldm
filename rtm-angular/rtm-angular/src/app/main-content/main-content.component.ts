@@ -56,17 +56,37 @@ export class MainContentComponent implements OnInit {
   }
 
 
+  orderObj;
   ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      this.orderObj = {...params.keys, ...params};
+      console.log(this.orderObj["params"]["email"]);
+    });
+    this.emailId = this.orderObj["params"]["email"];
+    this.workspaceName = this.orderObj["params"]["workspace"];
+    this.chatservice.getUserChannels(this.orderObj["params"]["email"], this.orderObj["params"]["workspace"])
+    .subscribe(s => {
+      console.log(s);
+      this.channelArray = s;
+    });
+
+    // this.chatservice.getUserChannels("d@gmail.com", "Stack")
+    // .subscribe(s => {
+    //   console.log(s);
+    //   this.channelArray = s;});
+    console.log(this.channelArray);
   }
 
 
+
   constructor(
+    private route: ActivatedRoute,
     private router:Router,
     private chatservice: ChatService,
     private fb: FormBuilder) {
     this.channelArray = new Array<Channel>();
     this._hubConnection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5000/chat')
+      .withUrl('http://172.23.238.230:5000/chat')
       .build();
 
     this._hubConnection.on('JoinChannel', (channelId: string) => {
@@ -95,13 +115,13 @@ export class MainContentComponent implements OnInit {
       .subscribe(s => this.channelId = s.channelId);
   }
 
-  ListAllChannels(){
-    console.log("in list channel function");
-    this.chatservice.getUserChannels(this.emailId,this.workspaceName)
-    .subscribe(s => {
-      console.log(s);
-      this.channelArray = s;});
-  }
+  // ListAllChannels(){
+  //   console.log("in list channel function");
+  //   this.chatservice.getUserChannels(this.emailId,this.workspaceName)
+  //   .subscribe(s => {
+  //     console.log(s);
+  //     this.channelArray = s;});
+  // }
   getChannelName(channel: Channel){
     console.log("get channel id");
     console.log(channel.channelName);
