@@ -49,7 +49,7 @@ namespace RTMService.Controllers
         }
         // getting the workspace by id
         [HttpGet]
-        [Route("workspaces/{id:length(24)}")]
+        [Route("workspaces/{id}")]
         public IActionResult GetWorkspaceById(string id)
         {
             if (!ModelState.IsValid)
@@ -66,7 +66,7 @@ namespace RTMService.Controllers
 
         // deleting a workspace by id 
         [HttpDelete]
-        [Route("workspaces/{id:length(24)}")]
+        [Route("workspaces/{id}")]
         public IActionResult Delete(string id)
         {
             var workspaceToDelete = iservice.GetWorkspaceById(id);
@@ -110,7 +110,7 @@ namespace RTMService.Controllers
 
         // creating a Channel
         [HttpPut]
-        [Route("workspaces/{id:length(24)}")]
+        [Route("workspaces/{id}")]
         public IActionResult CreateChannelInWorkSpace([FromBody] Channel channel, string id) // frombody workspace object or string name
         {
             if (!ModelState.IsValid)

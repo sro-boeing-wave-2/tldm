@@ -54,6 +54,7 @@ namespace RTMService.Services
                 WorkspaceId = workSpace.Id,
                 WorkspaceName = workSpace.WorkspaceName
             };
+
             _dbWorkSpace.GetCollection<Workspace>("Workspace").Save(newWorkspace);
             //User user = new User
             //{

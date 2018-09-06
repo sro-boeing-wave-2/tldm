@@ -7,7 +7,7 @@ namespace RTMService.Models
 {
     public class DummyChannel
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string ChannelName { get; set; }
     }
 }

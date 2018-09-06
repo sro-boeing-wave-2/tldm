@@ -14,9 +14,12 @@ namespace RTMService.Models
             this.Channels = new List<Channel>();
             this.Users = new List<User>();
         }
-        
+
+        // Todo: To be removed later
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        
         public string WorkspaceId { get; set; }
 
         [BsonElement("workspaceName")]

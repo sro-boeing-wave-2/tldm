@@ -9,8 +9,11 @@ namespace RTMService.Models
 {
     public class User
     {
+        // Todo: To be removed later
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
+        
         public string UserId { get; set; }
 
         [BsonElement("firstName")]
