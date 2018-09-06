@@ -23,7 +23,7 @@ namespace RTMService.Services
         //// channel related task
         Channel CreateChannel(Channel channel, string workspaceId);
         Channel GetChannelById(string channelId);
-        List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, DummyUserAccount user);
+        List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId);
         List<Channel> GetAllChannelsInWorkspace(string workSpaceName);
         //Channel GetGeneralChannelIdByWorkSpaceName(string workSpaceName);
         void DeleteChannel(string channelId);
@@ -35,7 +35,7 @@ namespace RTMService.Services
 
         //// user related task
         List<User> GetAllUsersInWorkspace(string workspaceName);
-        User AddUserToWorkspace(User user, string workspaceName);  ////????? 
+        User AddUserToWorkspace(DummyUserAccount user, string workspaceName);  ////????? 
         User GetUserByEmail(string emailId);
         //Task DeleteUserFromWorkspace(string workspaceName, int userId);
         //Task UpdateUserInWorkspace(User user);

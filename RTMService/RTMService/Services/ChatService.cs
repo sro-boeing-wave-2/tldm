@@ -19,7 +19,7 @@ namespace RTMService.Services
 
         public ChatService()
         {
-            _client = new MongoClient("mongodb://db/admindatabase");
+            _client = new MongoClient("mongodb://localhost:27017");
             _server = _client.GetServer();
             _dbWorkSpace = _server.GetDatabase("AllWorkspace");
             _dbChannel = _server.GetDatabase("AllChannels");
@@ -46,6 +46,7 @@ namespace RTMService.Services
             var result = Query<Workspace>.EQ(p => p.WorkspaceName, workspaceName);
             return _dbWorkSpace.GetCollection<Workspace>("Workspace").FindOne(result);
         }
+
         public Workspace CreateWorkspace(DummyWorkspace workSpace)
         {
             Workspace newWorkspace = new Workspace
@@ -54,24 +55,24 @@ namespace RTMService.Services
                 WorkspaceName = workSpace.WorkspaceName
             };
             _dbWorkSpace.GetCollection<Workspace>("Workspace").Save(newWorkspace);
-            User user = new User
-            {
-                UserId = workSpace.UserWorkspaces[0].UserAccount.Id,
-                EmailId = workSpace.UserWorkspaces[0].UserAccount.EmailId,
-                FirstName = workSpace.UserWorkspaces[0].UserAccount.FirstName,
-                LastName = workSpace.UserWorkspaces[0].UserAccount.LastName
-            };
-            _dbUser.GetCollection<User>("User").Save(user);
-            AddUserToWorkspace(user, newWorkspace.WorkspaceName);
+            //User user = new User
+            //{
+            //    UserId = workSpace.UserWorkspaces[0].UserAccount.Id,
+            //    EmailId = workSpace.UserWorkspaces[0].UserAccount.EmailId,
+            //    FirstName = workSpace.UserWorkspaces[0].UserAccount.FirstName,
+            //    LastName = workSpace.UserWorkspaces[0].UserAccount.LastName
+            //};
+            //_dbUser.GetCollection<User>("User").Save(user);
+            //AddUserToWorkspace(user, newWorkspace.WorkspaceName);
             foreach(var channel in workSpace.Channels)
             {
                 Channel newChannel = new Channel
                 {
                     ChannelName = channel.ChannelName,
-                    Admin = user,
+                    //Admin = user,
                     WorkspaceId = newWorkspace.WorkspaceId
                 };
-                newChannel.Users.Add(user);
+               // newChannel.Users.Add(user);
                 CreateChannel(newChannel, newChannel.WorkspaceId);
             }
 
@@ -160,8 +161,15 @@ namespace RTMService.Services
             return resultWorkspace.Users;
         }
 
-        public User AddUserToWorkspace(User user, string workspaceName)
+        public User AddUserToWorkspace(DummyUserAccount newuser, string workspaceName)
         {
+            User user = new User
+            {
+                UserId = newuser.Id,
+                EmailId = newuser.EmailId,
+                FirstName = newuser.FirstName,
+                LastName = newuser.LastName
+            };
             _dbUser.GetCollection<User>("User").Save(user);
             var resultWorkspace = GetWorkspaceByName(workspaceName);
             resultWorkspace.Users.Add(user);
@@ -180,10 +188,10 @@ namespace RTMService.Services
 
 
 
-        public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, DummyUserAccount user)
+        public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId)
         {
             var workspace = GetWorkspaceByName(workSpaceName);
-            var listOfChannels = workspace.Channels.FindAll(m => m.Users.Any(u => u.EmailId == user.EmailId));
+            var listOfChannels = workspace.Channels.FindAll(m => m.Users.Any(u => u.EmailId == emailId));
             return listOfChannels;
         }
 

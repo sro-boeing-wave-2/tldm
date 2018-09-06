@@ -146,18 +146,18 @@ namespace RTMService.Controllers
             return new ObjectResult(ListofUsers);
         }
 
-        // Adding a user to a workspace
-        //[HttpPut]
-        //[Route("workspaces/user")]
-        //public IActionResult AddUserToWorkspace([FromBody] User user) // frombody workspace object or string name
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    var userAdded = iservice.AddUserToWorkspace(user);
-        //    return new ObjectResult(userAdded);
-        //}
+       // Adding a user to a workspace
+       [HttpPut]
+        [Route("workspaces/user/{workspaceName}")]
+        public IActionResult AddUserToWorkspace([FromBody] DummyUserAccount user,string workspaceName) // frombody workspace object or string name
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var userAdded = iservice.AddUserToWorkspace(user,workspaceName);
+            return new ObjectResult(userAdded);
+        }
 
         // getting general channel id by workspace name
         //[HttpGet]
@@ -188,15 +188,15 @@ namespace RTMService.Controllers
 
 
         // getting all channels a user is part of in a workspace by workspace name and emailid
-        [HttpPost]
-        [Route("workspaces/{workspaceName}")]
-        public IActionResult GetAllChannelsOfUserInWorkSpace(string workspaceName, DummyUserAccount user)
+        [HttpGet]
+        [Route("workspaces/{workspaceName}/{emailId}")]
+        public IActionResult GetAllChannelsOfUserInWorkSpace(string workspaceName, string emailId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            List<Channel> channels = iservice.GetAllUserChannelsInWorkSpace(workspaceName, user);
+            List<Channel> channels = iservice.GetAllUserChannelsInWorkSpace(workspaceName, emailId);
             return new ObjectResult(channels);
         }
 
