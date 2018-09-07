@@ -230,6 +230,10 @@ namespace RTMService.Controllers
         [Route("workspaces/{workspaceName}/{emailId}")]
         public IActionResult GetAllChannelsOfUserInWorkSpace(string workspaceName, string emailId)
         {
+            if(workspaceName==null || emailId== null)
+            {
+                return NotFound("Please enter both workspaceName and email id");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
