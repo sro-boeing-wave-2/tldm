@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 
 namespace RTMService.Models
 {
-    public class DummyWorkspace
+    public class WorkspaceView
     {
-        public DummyWorkspace()
+        public WorkspaceView()
         {
-            this.UsersState = new List<DummyUserState>();
-            this.Channels = new List<DummyChannel>();
-            this.UserWorkspaces = new List<DummyUserWorkspace>();
+            this.UsersState = new List<UserStateView>();
+            this.Channels = new List<ChannelView>();
+            this.UserWorkspaces = new List<UserWorkspaceView>();
         }
         public string Id { get; set; }
         public string WorkspaceName { get; set; } 
         public string PictureUrl { get; set; }
-        public List<DummyChannel> Channels { get; set; }
-        public List<DummyUserState> UsersState { get; set; }
-        public List<DummyUserWorkspace> UserWorkspaces { get; set; }
+        public List<ChannelView> Channels { get; set; }
+        public List<UserStateView> UsersState { get; set; }
+        public List<UserWorkspaceView> UserWorkspaces { get; set; }
     }
 }

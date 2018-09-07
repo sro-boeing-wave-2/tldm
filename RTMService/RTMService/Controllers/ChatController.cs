@@ -25,8 +25,13 @@ namespace RTMService.Controllers
         // creating a workspace
         [HttpPost]
         [Route("workspaces")]
-        public IActionResult CreateWorkspace([FromBody] DummyWorkspace workspace) // frombody workspace object or string name
+        public IActionResult CreateWorkspace([FromBody] WorkspaceView workspace) // frombody workspace object or string name
         {
+            var searchedWorkspace = iservice.GetWorkspaceById(workspace.Id);
+            if(searchedWorkspace != null)
+            {
+                return NotFound("Workspace already exists");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -59,7 +64,7 @@ namespace RTMService.Controllers
             var Workspace = iservice.GetWorkspaceById(id);
             if (Workspace == null)
             {
-                return NotFound();
+                return NotFound("No Workspcae Found");
             }
             return new ObjectResult(Workspace);
         }
@@ -67,30 +72,30 @@ namespace RTMService.Controllers
         // deleting a workspace by id 
         [HttpDelete]
         [Route("workspaces/{id}")]
-        public IActionResult Delete(string id)
+        public IActionResult DeleteWorkspaceById(string id)
         {
             var workspaceToDelete = iservice.GetWorkspaceById(id);
             if (workspaceToDelete == null)
             {
-                return NotFound();
+                return NotFound("Workspace trying to delete not found");
             }
 
             iservice.DeleteWorkspace(workspaceToDelete.WorkspaceId);
-            return new OkResult();
+            return NoContent();
         }
         // deleting a channel by id and workspacename
         [HttpDelete]
-        [Route("workspaces/channels/{id:length(24)}")]
-        public IActionResult DeleteChannelByIdAndWorkspaceName(string id)
+        [Route("workspaces/channels/{id}")]
+        public IActionResult DeleteChannelById(string channelId)
         {
-            var ChannelToDelete = iservice.GetChannelById(id);
+            var ChannelToDelete = iservice.GetChannelById(channelId);
             if (ChannelToDelete == null)
             {
-                return NotFound();
+                return NotFound("Channel trying to delete not found");
             }
 
             iservice.DeleteChannel(ChannelToDelete.ChannelId);
-            return new OkResult();
+            return NoContent();
         }
         // deleting a user from channel
         [HttpDelete]
@@ -100,31 +105,58 @@ namespace RTMService.Controllers
             var ChannelToDelete = iservice.GetChannelById(channelId);
             if (ChannelToDelete == null)
             {
-                return NotFound();
+                return NotFound("Channel not found");
             }
 
             iservice.DeleteUserFromChannel(emailId,channelId);
-            return new OkResult();
+            return NoContent();
         }
+        //// deleting a user from workspace
+        //[HttpDelete]
+        //[Route("workspaces/channels/{channelId:length(24)}/{emailId}")]
+        //public IActionResult DeleteuserFromWorkspace(User user, string workspaceName)
+        //{
+        //    var searchedWorkspace = iservice.GetWorkspaceByName(workspaceName);
+        //    if (searchedWorkspace == null)
+        //    {
+        //        return NotFound("Workspace not found");
+        //    }
+
+        //    iservice.DeleteUserFromChannel(emailId, channelId);
+        //    return NoContent();
+        //}
 
 
         // creating a Channel
         [HttpPut]
-        [Route("workspaces/{id}")]
-        public IActionResult CreateChannelInWorkSpace([FromBody] Channel channel, string id) // frombody workspace object or string name
+        [Route("workspaces/{workspaceName}")]
+        public IActionResult CreateChannelInWorkSpace([FromBody] Channel channel, string workspaceName) 
         {
+           
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            iservice.CreateChannel(channel, id);
+            iservice.CreateChannel(channel, workspaceName);
             return new ObjectResult(channel);
         }
         // Adding a user to a channel
         [HttpPut]
         [Route("workspaces/channel/{channelId}")]
-        public IActionResult AddUserToChannel([FromBody] User user, string ChannelId) // frombody workspace object or string name
+        public IActionResult AddUserToChannel([FromBody] User user, string ChannelId) 
         {
+            var searchedChannel = iservice.GetChannelById(ChannelId);
+            var userAlreadyAddedInChannel = searchedChannel.Users.Find(u => u.UserId == user.UserId);
+            if(userAlreadyAddedInChannel != null)
+            {
+                return NotFound("User already added in Channel");
+            }
+            var searchedWorkspace = iservice.GetWorkspaceById(searchedChannel.WorkspaceId);
+            var searchedUser = searchedWorkspace.Users.Find(u => u.UserId == user.UserId);
+            if(searchedUser==null)
+            {
+                return NotFound("User is not added in Workspace. First complete onboarding process");
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -149,11 +181,17 @@ namespace RTMService.Controllers
        // Adding a user to a workspace
        [HttpPut]
         [Route("workspaces/user/{workspaceName}")]
-        public IActionResult AddUserToWorkspace([FromBody] DummyUserAccount user,string workspaceName) // frombody workspace object or string name
+        public IActionResult AddUserToWorkspace([FromBody] UserAccountView user,string workspaceName) // frombody workspace object or string name
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            var searchedWorkSpace = iservice.GetWorkspaceByName(workspaceName);
+            var userAlreadyInWorkspace = searchedWorkSpace.Users.Find(u => u.UserId == user.Id);
+            if(userAlreadyInWorkspace != null )
+            {
+                return NotFound("User already added in Workspace");
             }
             var userAdded = iservice.AddUserToWorkspace(user,workspaceName);
             return new ObjectResult(userAdded);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RTMService.Models
 {
-    public class DummyChannel
+    public class ChannelView
     {
         public string Id { get; set; }
         public string ChannelName { get; set; }

@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace RTMService.Models
 {
-    public class DummyUserAccount
+    public class UserAccountView
     {
-        public DummyUserAccount()
+        public UserAccountView()
         {
-            this.Workspaces = new List<DummyWorkspace>();
-            this.UserWorkspaces = new List<DummyUserWorkspace>();
+            this.Workspaces = new List<WorkspaceView>();
+            this.UserWorkspaces = new List<UserWorkspaceView>();
         }
         public string Id { get; set; }
 
@@ -24,7 +24,7 @@ namespace RTMService.Models
 
         public bool IsVerified { get; set; }
 
-        public List<DummyWorkspace> Workspaces { get; set; }
-        public List<DummyUserWorkspace> UserWorkspaces { get; set; }
+        public List<WorkspaceView> Workspaces { get; set; }
+        public List<UserWorkspaceView> UserWorkspaces { get; set; }
     }
 }

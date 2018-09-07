@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RTMService.Models
 {
-    public class DummyWorkspaceName
+    public class WorkspaceNameView
     {
         public string Id { get; set; }
         public string Name { get; set; }

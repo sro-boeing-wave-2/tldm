@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RTMService.Models
 {
-    public class DummyUserState
+    public class UserStateView
     {
         public string Id { get; set; }
         public string EmailId { get; set; }

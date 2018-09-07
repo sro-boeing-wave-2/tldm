@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace RTMService.Models
 {
-    public class DummyUserWorkspace
+    public class UserWorkspaceView
     {
         public string UserId { get; set; }
-        public DummyUserAccount UserAccount { get; set; }
+        public UserAccountView UserAccount { get; set; }
         public string WorkspaceId { get; set; }
-        public DummyWorkspace Workspace { get; set; }
+        public WorkspaceView Workspace { get; set; }
     }
 }

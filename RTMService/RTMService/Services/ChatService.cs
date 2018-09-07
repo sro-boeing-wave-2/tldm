@@ -47,7 +47,7 @@ namespace RTMService.Services
             return _dbWorkSpace.GetCollection<Workspace>("Workspace").FindOne(result);
         }
 
-        public Workspace CreateWorkspace(DummyWorkspace workSpace)
+        public Workspace CreateWorkspace(WorkspaceView workSpace)
         {
             Workspace newWorkspace = new Workspace
             {
@@ -74,7 +74,7 @@ namespace RTMService.Services
                     WorkspaceId = newWorkspace.WorkspaceId
                 };
                // newChannel.Users.Add(user);
-                CreateChannel(newChannel, newChannel.WorkspaceId);
+                CreateChannel(newChannel, workSpace.WorkspaceName);
             }
 
              return GetWorkspaceByName(workSpace.WorkspaceName);
@@ -85,14 +85,15 @@ namespace RTMService.Services
             var operation = _dbWorkSpace.GetCollection<Workspace>("Workspace").Remove(result);
         }
 
-        public Channel CreateChannel(Channel channel, string workspaceId)
+        public Channel CreateChannel(Channel channel, string workspaceName)
         {
-            channel.WorkspaceId = workspaceId;
+            var searchedWorkspace = GetWorkspaceByName(workspaceName);
+            channel.WorkspaceId = searchedWorkspace.WorkspaceId;
             _dbChannel.GetCollection<Channel>("Channel").Save(channel);
-            var result = GetWorkspaceById(workspaceId);
+            var result = GetWorkspaceById(searchedWorkspace.WorkspaceId);
             result.Channels.Add(channel);
-            result.WorkspaceId = workspaceId;
-            var res = Query<Workspace>.EQ(pd => pd.WorkspaceId, workspaceId);
+            result.WorkspaceId = searchedWorkspace.WorkspaceId;
+            var res = Query<Workspace>.EQ(pd => pd.WorkspaceId, searchedWorkspace.WorkspaceId);
             var operation = Update<Workspace>.Replace(result);
             _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(res, operation);
             return channel;
@@ -162,7 +163,7 @@ namespace RTMService.Services
             return resultWorkspace.Users;
         }
 
-        public User AddUserToWorkspace(DummyUserAccount newuser, string workspaceName)
+        public User AddUserToWorkspace(UserAccountView newuser, string workspaceName)
         {
             User user = new User
             {
