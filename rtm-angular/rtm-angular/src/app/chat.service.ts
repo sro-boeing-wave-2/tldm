@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { User } from './User';
 import { Message } from './Message';
 import { Channel } from './Channel';
@@ -15,10 +15,19 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class ChatService {
+  private emailId = new BehaviorSubject('');
+  currentEmailId = this.emailId.asObservable();
+  private workspace = new BehaviorSubject('');
+  currentWorkspace = this.workspace.asObservable();
 
   private _chaturl = "http://172.23.238.230:5000/api/chat/workspaces";///////check port
 
   constructor(private http: HttpClient) { }
+
+  setEmailAndWorkspace(email: string, workspace: string) {
+    this.emailId.next(email);
+    this.workspace.next(workspace);
+  }
 
   CreateWorkspace(workspace: Workspace): Observable<Workspace> {
     return this.http.post<Workspace>(this._chaturl, workspace, httpOptions).pipe(
@@ -33,6 +42,15 @@ export class ChatService {
     return this.http.put(url, user, httpOptions).pipe(
       catchError(this.handleError<any>('addUserToWorkSpace'))
     );
+  }
+
+  createNewChannel(channel:Channel, workspacename:string): Observable<Channel> {
+    var x= `${this._chaturl}/${workspacename}`;
+
+    console.log(x);
+    return this.http.put(`${this._chaturl}/${workspacename}`, channel, httpOptions).pipe(
+      catchError(this.handleError<any>('createNewChannel'))
+    )
   }
 
   getChannelIdByWorkspaceName(workspacename: string):Observable<Channel>{
@@ -57,7 +75,7 @@ export class ChatService {
   }
 
   getAllUsersInWorkspace(workspaceName:string):Observable<User[]>{
-    const url = "http://172.23.238.230:5000/api/chat/user";
+    const url = "http://172.23.238.230:5000/api/chat/workspaces/user";
     return this.http.get<User[]>(`${url}/${workspaceName}`).pipe(
       catchError(this.handleError<any>('getAllUsersInWorkspace'))
     );

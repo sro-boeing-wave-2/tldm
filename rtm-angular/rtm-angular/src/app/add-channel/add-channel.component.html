@@ -1,11 +1,40 @@
+<mat-card class="add-new-channel">
+  <mat-card-title>
+    Create a channel
+  </mat-card-title>
+
+<form [formGroup]="channelForm">
+  <!-- <mat-form-field> -->
+    <label>Channel Name:</label>
+    <!-- <input matInput formControlName="channelName" [(ngModel)]=channelName> -->
+    <input type="text" formControlName ="channelName" class="form-control">
+  <!-- </mat-form-field> -->
+</form>
+  <mat-card-content>
+    <h4>Select the users you want to add to the channel:</h4>
+    <mat-selection-list [(ngModel)]=userSelected #selectedUsers>
+      <mat-list-option *ngFor="let user of allUsers" [value]=user>
+        {{user.firstName}}
+      </mat-list-option>
+    </mat-selection-list>
+
+    <h5>
+      Selected Users: {{selectedUsers.selectedOptions.selected.length}}
+    </h5>
+    <mat-list role="list">
+      <mat-list-item role="listitem" *ngFor="let user of userSelected">
+        {{user.firstName}}
+      </mat-list-item>
+    </mat-list>
+
+    <button mat-raised-button color="primary" (click)=addNewChannel()>Primary</button>
 
 
- <mat-card class="add-new-channel">
-    <mat-card-title>
-      Create a channel
-    </mat-card-title>
 
-    <mat-card-content>
+  </mat-card-content>
+
+
+  <!-- <mat-card-content>
       <form [formGroup]="AddChannelForm" (ngSubmit)="addNewChannel()">
         <table class="content-class">
           <tr>
@@ -54,5 +83,5 @@
           </tr>
         </table>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </mat-card-content> -->
+</mat-card>

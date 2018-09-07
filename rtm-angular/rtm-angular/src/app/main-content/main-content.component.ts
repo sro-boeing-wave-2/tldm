@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@aspnet/signalr';
 import { ChatService } from '../chat.service';
 import { FormGroup, FormControl, FormBuilder, FormArray } from '@angular/forms';
@@ -8,6 +8,7 @@ import { ActivatedRoute,Router } from '@angular/router';
 import { User } from '../User';
 import { Message } from '../Message';
 import { Observable } from 'rxjs';
+//import { EventEmitter } from 'protractor';
 
 @Component({
   selector: 'app-main-content',
@@ -64,6 +65,7 @@ export class MainContentComponent implements OnInit {
     });
     this.emailId = this.orderObj["params"]["email"];
     this.workspaceName = this.orderObj["params"]["workspace"];
+    this.chatservice.setEmailAndWorkspace(this.emailId, this.workspaceName);
     this.chatservice.getUserChannels(this.orderObj["params"]["email"], this.orderObj["params"]["workspace"])
     .subscribe(s => {
       console.log(s);
@@ -134,11 +136,15 @@ export class MainContentComponent implements OnInit {
     this.joinChannel(channel.channelId);
   }
 
+  // @Output()
+  // currentUserEmail = new EventEmitter();
+
 Channel()
 {
 this.router.navigate(['addChannel']);
-
+//this.currentUserEmail.emit(this.emailId);
 }
+
 
 
 }
