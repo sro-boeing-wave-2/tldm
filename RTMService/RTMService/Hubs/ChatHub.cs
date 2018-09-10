@@ -43,6 +43,7 @@ namespace RTMService.Hubs
         {
             Groups.AddToGroupAsync(Context.ConnectionId, channelId);
             Clients.Group(channelId).SendAsync("SendMessageInChannel", sender, message);
+            //Clients.Client(Context.ConnectionId).SendAsync(channelId);
         }
     }
 }

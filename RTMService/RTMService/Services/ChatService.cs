@@ -199,8 +199,11 @@ namespace RTMService.Services
 
         public List<Channel> GetAllChannelsInWorkspace(string workSpaceName)
         {
-            var workspace = GetWorkspaceByName(workSpaceName);
-            return workspace.Channels;
+            
+                var workspace = GetWorkspaceByName(workSpaceName);
+                return workspace.Channels;
+           
+            
         }
 
         public User GetUserByEmail(string emailId)

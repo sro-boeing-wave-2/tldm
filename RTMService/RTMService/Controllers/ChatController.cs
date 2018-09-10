@@ -167,7 +167,7 @@ namespace RTMService.Controllers
 
         // getting all the users
         [HttpGet]
-        [Route("user/{workspaceName}")]
+        [Route("workspaces/user/{workspaceName}")]
         public IActionResult GetAllUsersInWorkspace(string workspaceName)
         {
             if (!ModelState.IsValid)
@@ -194,6 +194,26 @@ namespace RTMService.Controllers
                 return NotFound("User already added in Workspace");
             }
             var userAdded = iservice.AddUserToWorkspace(user,workspaceName);
+            //creating channels for new user with all other existing users
+            List<User> ListOfAllUsersInWorkspace = iservice.GetAllUsersInWorkspace(workspaceName);
+
+            foreach (var ExistingUser in ListOfAllUsersInWorkspace)
+            {
+                if(ExistingUser.EmailId!= userAdded.EmailId)
+                {
+                    Channel newChannel = new Channel
+                    {
+                        //creating unique channel name
+                        ChannelName = ExistingUser.FirstName + userAdded.UserId,
+                        //WorkspaceId = searchedWorkSpace.WorkspaceId
+                    };
+                    newChannel.Users.Add(userAdded);
+                    newChannel.Users.Add(ExistingUser);
+                    iservice.CreateChannel(newChannel, workspaceName);
+                }
+                
+            }
+
             return new ObjectResult(userAdded);
         }
 
