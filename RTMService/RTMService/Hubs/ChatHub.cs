@@ -53,6 +53,7 @@ namespace RTMService.Hubs
         {
             Groups.AddToGroupAsync(Context.ConnectionId, channelId);
             Clients.Group(channelId).SendAsync("SendMessageInChannel", sender, message);
+            iservice.AddMessageToChannel(message, channelId, sender);
             //Clients.Client(Context.ConnectionId).SendAsync(channelId);
         }
         //public override Task OnConnectedAsync()

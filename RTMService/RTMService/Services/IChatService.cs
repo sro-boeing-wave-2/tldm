@@ -31,17 +31,19 @@ namespace RTMService.Services
         //Task<Channel> UpdateChannel(Channel channel);
         //Task<List<Channel>> GetChannelByuserIDandWorkspaceName(int userId, string workspaceName);
         User AddUserToChannel(User user, string channelId);
+        
         void DeleteUserFromChannel(string emailId, string channelId);
         //Task<List<Message>> GetMessagesInChannel(int channelId, string workspaceName);
 
         //// user related task
         List<User> GetAllUsersInWorkspace(string workspaceName);
         User AddUserToWorkspace(UserAccountView user, string workspaceName);  
-        User GetUserByEmail(string emailId);
+        User GetUserByEmail(string emailId, string workspaceName);
         //Task DeleteUserFromWorkspace(string workspaceName, int userId);
         //Task UpdateUserInWorkspace(User user);
 
         ////Message related task
+        Message AddMessageToChannel(string message, string channelId, string senderMail);
         //Task DeleteMessageInChannel(string workspaceName, int channelId, int messageId);
 
     }

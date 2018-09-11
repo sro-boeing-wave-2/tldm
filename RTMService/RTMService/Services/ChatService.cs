@@ -123,6 +123,44 @@ namespace RTMService.Services
             return newUser;
 
         }
+        public Message AddMessageToChannel(string message, string channelId, string senderMail)
+        {
+
+            // add user to channel and updating channel
+            var resultChannel = GetChannelById(channelId);
+            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+            var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
+            Message newMessage = new Message
+            {
+                MessageBody = message,
+                Sender = resultSender,
+                Timestamp = DateTime.Now,
+            };
+            if(resultChannel.Messages.Count() < 50)
+            {
+                resultChannel.Messages.Add(newMessage);
+            }
+            else
+            {
+                resultChannel.Messages.RemoveAt(0);
+                resultChannel.Messages.Add(newMessage);
+            }
+            
+            resultChannel.ChannelId = channelId;
+            var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
+            var operation = Update<Channel>.Replace(resultChannel);
+            _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
+
+            // update channel in workspace
+           // var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+            resultWorkspace.Channels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
+            var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
+            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
+            return newMessage;
+
+        }
+
         public void DeleteChannel(string channelId)
         {
             var channelresult = GetChannelById(channelId);
@@ -199,7 +237,7 @@ namespace RTMService.Services
         public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId)
         {
             var workspace = GetWorkspaceByName(workSpaceName);
-            var listOfChannels = workspace.Channels.FindAll(m => (m.ChannelName != "OneToOne") && m.Users.Any(u => u.EmailId == emailId));
+            var listOfChannels = workspace.Channels.FindAll(m => (m.ChannelName != "") && m.Users.Any(u => u.EmailId == emailId));
             return listOfChannels;
         }
 
@@ -212,10 +250,13 @@ namespace RTMService.Services
             
         }
 
-        public User GetUserByEmail(string emailId)
+        public User GetUserByEmail(string emailId, string workspaceName)
         {
-            var result = Query<User>.EQ(p => p.EmailId, emailId);
-            return _dbUser.GetCollection<User>("User").FindOne(result);
+            var resultWorkspace = GetWorkspaceByName(workspaceName);
+            var user = resultWorkspace.Users.Find(u => u.EmailId == emailId);
+            return user;
+            //var result = Query<User>.EQ(p => p.EmailId, emailId);
+            //return _dbUser.GetCollection<User>("User").FindOne(result);
         }
 
         

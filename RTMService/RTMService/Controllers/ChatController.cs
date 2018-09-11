@@ -285,14 +285,14 @@ namespace RTMService.Controllers
 
         // get user by id
         [HttpGet]
-        [Route("user/{userEmail}")]
-        public IActionResult GetUserByEmail(string userEmail)
+        [Route("user/{workspaceName}/{userEmail}")]
+        public IActionResult GetUserByEmail(string userEmail, string workspaceName)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var user = iservice.GetUserByEmail(userEmail);
+            var user = iservice.GetUserByEmail(userEmail,workspaceName);
             return new ObjectResult(user);
         }
 

@@ -22,7 +22,7 @@ namespace RTMService.Models
         public string MessageBody { get; set; }
 
         [BsonElement("timestamp")]
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         [BsonElement("isStarred")]
         public bool IsStarred { get; set; }
