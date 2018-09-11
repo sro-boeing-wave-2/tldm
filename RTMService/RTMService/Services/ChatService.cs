@@ -190,7 +190,7 @@ namespace RTMService.Services
         public Channel GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName)
         {
             var workspace = GetWorkspaceByName(workspaceName);
-            var channel = workspace.Channels.FindAll(m => (m.ChannelName == "OneToOne") && m.Users.Any(u => u.EmailId == senderMail));
+            var channel = workspace.Channels.FindAll(m => (m.ChannelName == "") && m.Users.Any(u => u.EmailId == senderMail));
             var oneToOneChannel = channel.Find(c => c.Users.Any(u => u.EmailId == receiverMail));
             return oneToOneChannel;
         }

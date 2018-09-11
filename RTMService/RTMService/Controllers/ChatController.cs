@@ -208,7 +208,7 @@ namespace RTMService.Controllers
                     Channel newChannel = new Channel
                     {
                         //creating unique channel name
-                        ChannelName = "OneToOne"//ExistingUser.UserId + userAdded.UserId,
+                        ChannelName = ""//ExistingUser.UserId + userAdded.UserId,
                      
                     };
                     newChannel.Users.Add(userAdded);
