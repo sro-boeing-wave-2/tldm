@@ -20,13 +20,20 @@ export class ChatService {
   private workspace = new BehaviorSubject('');
   currentWorkspace = this.workspace.asObservable();
 
-  private _chaturl = "http://172.23.238.230:5000/api/chat/workspaces";///////check port
+  private listOfUsers = new BehaviorSubject([]);
+  currentListOfUsers = this.listOfUsers.asObservable();
+
+  private _chaturl = "http://172.23.238.230:5004/api/chat/workspaces";///////check port
 
   constructor(private http: HttpClient) { }
 
   setEmailAndWorkspace(email: string, workspace: string) {
     this.emailId.next(email);
     this.workspace.next(workspace);
+  }
+
+  setListOfUsers (listofusers:User[]){
+    this.listOfUsers.next(listofusers);
   }
 
   CreateWorkspace(workspace: Workspace): Observable<Workspace> {
@@ -62,7 +69,7 @@ export class ChatService {
   }
 
   getUserById(userid:string):Observable<User>{
-    const url = "http://172.23.238.230:5000/api/chat/user"
+    const url = "http://172.23.238.230:5004/api/chat/user"
     return this.http.get<User>(`${url}/${userid}`).pipe(
       catchError(this.handleError<any>('getUserById'))
     );
@@ -75,7 +82,7 @@ export class ChatService {
   }
 
   getAllUsersInWorkspace(workspaceName:string):Observable<User[]>{
-    const url = "http://172.23.238.230:5000/api/chat/workspaces/user";
+    const url = "http://172.23.238.230:5004/api/chat/workspaces/user";
     return this.http.get<User[]>(`${url}/${workspaceName}`).pipe(
       catchError(this.handleError<any>('getAllUsersInWorkspace'))
     );
