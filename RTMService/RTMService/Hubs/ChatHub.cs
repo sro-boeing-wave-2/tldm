@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using RTMService.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,15 @@ namespace RTMService.Hubs
 {
     public class ChatHub : Hub
     {
+        private IChatService iservice;
+
+
+        public ChatHub(IChatService c)
+        {
+            iservice = c;
+        }
+
+
         public void SendToAll(string name, string message)
         {
             Clients.All.SendAsync("sendToAll", name, message);
@@ -45,5 +55,18 @@ namespace RTMService.Hubs
             Clients.Group(channelId).SendAsync("SendMessageInChannel", sender, message);
             //Clients.Client(Context.ConnectionId).SendAsync(channelId);
         }
+        //public override Task OnConnectedAsync()
+        //{
+        //    string userId = null;
+        //    Clients.All.SendAsync("DisplayUserOnline", userId);
+
+        //    return base.OnConnectedAsync();
+        //}
+        //public override Task OnDisconnectedAsync(Exception exception)
+        //{
+            
+        //    CurrentConnections.Remove(Context.ConnectionId);
+        //    return base.OnDisconnectedAsync(exception);
+        //}
     }
 }

@@ -187,12 +187,16 @@ namespace RTMService.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var searchedWorkSpace = iservice.GetWorkspaceByName(workspaceName);
-            var userAlreadyInWorkspace = searchedWorkSpace.Users.Find(u => u.UserId == user.Id);
-            if(userAlreadyInWorkspace != null )
+            try
             {
-                return NotFound("User already added in Workspace");
+                var searchedWorkSpace = iservice.GetWorkspaceByName(workspaceName);
+                var userAlreadyInWorkspace = searchedWorkSpace.Users.Find(u => u.UserId == user.Id);
+                if (userAlreadyInWorkspace != null)
+                {
+                    return NotFound("User already added in Workspace");
+                }
             }
+            catch { }
             var userAdded = iservice.AddUserToWorkspace(user,workspaceName);
             //creating channels for new user with all other existing users
             List<User> ListOfAllUsersInWorkspace = iservice.GetAllUsersInWorkspace(workspaceName);
@@ -204,8 +208,8 @@ namespace RTMService.Controllers
                     Channel newChannel = new Channel
                     {
                         //creating unique channel name
-                        ChannelName = ExistingUser.FirstName + userAdded.UserId,
-                        //WorkspaceId = searchedWorkSpace.WorkspaceId
+                        ChannelName = "OneToOne"//ExistingUser.UserId + userAdded.UserId,
+                     
                     };
                     newChannel.Users.Add(userAdded);
                     newChannel.Users.Add(ExistingUser);
@@ -262,9 +266,26 @@ namespace RTMService.Controllers
             return new ObjectResult(channels);
         }
 
+        // getting all channels a user is part of in a workspace by workspace name and emailid
+        [HttpGet]
+        [Route("workspaces/onetoone/{workspaceName}/{senderMail}/{receiverMail}")]
+        public IActionResult GetOneToOneChannel(string senderMail, string receiverMail, string workspaceName)
+        {
+            if (workspaceName == null || senderMail == null || receiverMail == null)
+            {
+                return NotFound("Please enter all fields");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            Channel channel = iservice.GetChannelForOneToOneChat(senderMail, receiverMail, workspaceName);
+            return new ObjectResult(channel);
+        }
+
         // get user by id
         [HttpGet]
-        [Route("user/{userId}")]
+        [Route("user/{userEmail}")]
         public IActionResult GetUserByEmail(string userEmail)
         {
             if (!ModelState.IsValid)

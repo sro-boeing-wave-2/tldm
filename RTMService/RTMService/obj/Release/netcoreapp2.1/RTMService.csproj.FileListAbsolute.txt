@@ -11,3 +11,4 @@ D:\workspace\RTM\RTM Dotnet\tldm\RTMService\RTMService\obj\Release\netcoreapp2.1
 D:\workspace\RTM\RTM Dotnet\tldm\RTMService\RTMService\obj\Release\netcoreapp2.1\RTMService.RazorTargetAssemblyInfo.cache
 D:\workspace\RTM\RTM Dotnet\tldm\RTMService\RTMService\obj\Release\netcoreapp2.1\RTMService.dll
 D:\workspace\RTM\RTM Dotnet\tldm\RTMService\RTMService\obj\Release\netcoreapp2.1\RTMService.pdb
+D:\workspace\RTM\RTM Dotnet\tldm\RTMService\RTMService\obj\Release\netcoreapp2.1\RTMService.csprojAssemblyReference.cache

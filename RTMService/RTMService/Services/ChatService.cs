@@ -187,13 +187,19 @@ namespace RTMService.Services
         //    var generalChannel = resultWorkspace.Channels.Find(i => i.ChannelName == "general");
         //    return generalChannel;
         //}
-
+        public Channel GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName)
+        {
+            var workspace = GetWorkspaceByName(workspaceName);
+            var channel = workspace.Channels.FindAll(m => (m.ChannelName == "OneToOne") && m.Users.Any(u => u.EmailId == senderMail));
+            var oneToOneChannel = channel.Find(c => c.Users.Any(u => u.EmailId == receiverMail));
+            return oneToOneChannel;
+        }
 
 
         public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId)
         {
             var workspace = GetWorkspaceByName(workSpaceName);
-            var listOfChannels = workspace.Channels.FindAll(m => m.Users.Any(u => u.EmailId == emailId));
+            var listOfChannels = workspace.Channels.FindAll(m => (m.ChannelName != "OneToOne") && m.Users.Any(u => u.EmailId == emailId));
             return listOfChannels;
         }
 
