@@ -12,42 +12,41 @@ namespace RTMService.Services
     {
         MongoClient _client;
         MongoServer _server;
-        MongoDatabase _dbWorkSpace;
-        MongoDatabase _dbChannel;
-        MongoDatabase _dbUser;
-        MongoDatabase _dbMessage;
+        IMongoCollection<Workspace> _dbWorkSpace;
+        IMongoCollection<Channel> _dbChannel;
+        IMongoCollection<User> _dbUser;
+        IMongoCollection<Message> _dbMessage;
 
         public ChatService()
         {
             _client = new MongoClient("mongodb://localhost:27017");
             _server = _client.GetServer();
-            _dbWorkSpace = _server.GetDatabase("AllWorkspace");
-            _dbChannel = _server.GetDatabase("AllChannels");
-            _dbUser = _server.GetDatabase("AllUsers");
-            _dbMessage = _server.GetDatabase("AllMessages");
+            _dbWorkSpace = _client.GetDatabase("AllWorkspace").GetCollection<Workspace>("Workspace");
+            _dbChannel = _client.GetDatabase("AllChannels").GetCollection<Channel>("Channel");
+            _dbUser = _client.GetDatabase("AllUsers").GetCollection<User>("User");
+            _dbMessage = _client.GetDatabase("AllMessages").GetCollection<Message>("Message");
 
         }
 
-        public IEnumerable<Workspace> GetAllWorkspaces()
+        public async Task<IEnumerable<Workspace>> GetAllWorkspacesAsync()
         {
-            return _dbWorkSpace.GetCollection<Workspace>("Workspace").FindAll();
+            return await _dbWorkSpace.Find(_ => true).ToListAsync();
         }
 
 
 
-        public Workspace GetWorkspaceById(string id)
+        public async Task<Workspace> GetWorkspaceById(string id)
         {
-            var result = Query<Workspace>.EQ(p => p.WorkspaceId, id);
-            return _dbWorkSpace.GetCollection<Workspace>("Workspace").FindOne(result);
+            
+            return await _dbWorkSpace.Find(w => w.WorkspaceId == id).FirstOrDefaultAsync();
         }
 
-        public Workspace GetWorkspaceByName(string workspaceName)
+        public async Task<Workspace> GetWorkspaceByName(string workspaceName)
         {
-            var result = Query<Workspace>.EQ(p => p.WorkspaceName, workspaceName);
-            return _dbWorkSpace.GetCollection<Workspace>("Workspace").FindOne(result);
+            return await _dbWorkSpace.Find(w => w.WorkspaceName == workspaceName).FirstOrDefaultAsync();
         }
 
-        public Workspace CreateWorkspace(WorkspaceView workSpace)
+        public async Task<Workspace> CreateWorkspace(WorkspaceView workSpace)
         {
             Workspace newWorkspace = new Workspace
             {
@@ -55,9 +54,9 @@ namespace RTMService.Services
                 WorkspaceName = workSpace.WorkspaceName
             };
 
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Save(newWorkspace);
+            await _dbWorkSpace.InsertOneAsync(newWorkspace);
             //creating default channels
-            foreach(var channel in workSpace.Channels)
+            foreach (var channel in workSpace.Channels)
             {
                 Channel newChannel = new Channel
                 {
@@ -66,98 +65,103 @@ namespace RTMService.Services
                     WorkspaceId = newWorkspace.WorkspaceId
                 };
                 // newChannel.Users.Add(user);
-                CreateDefaultChannel(newChannel, workSpace.WorkspaceName);
+                await CreateDefaultChannel(newChannel, workSpace.WorkspaceName);
             }
 
-             return GetWorkspaceByName(workSpace.WorkspaceName);
+            return await GetWorkspaceByName(workSpace.WorkspaceName);
         }
-        public void DeleteWorkspace(string id)
+        public async Task DeleteWorkspace(string id)
         {
-            var result = Query<Workspace>.EQ(e => e.WorkspaceId, id);
-            var operation = _dbWorkSpace.GetCollection<Workspace>("Workspace").Remove(result);
+           
+             await _dbWorkSpace.DeleteOneAsync(w => w.WorkspaceId== id);
         }
 
-        public Channel CreateChannel(Channel channel, string workspaceName)
+        public async Task<Channel> CreateChannel(Channel channel, string workspaceName)
         {
-            var searchedWorkspace = GetWorkspaceByName(workspaceName);
+            var searchedWorkspace = GetWorkspaceByName(workspaceName).Result;
             channel.WorkspaceId = searchedWorkspace.WorkspaceId;
-            _dbChannel.GetCollection<Channel>("Channel").Save(channel);
-            var result = GetWorkspaceById(searchedWorkspace.WorkspaceId);
+            await _dbChannel.InsertOneAsync(channel);
+            var result = GetWorkspaceById(searchedWorkspace.WorkspaceId).Result;
             result.Channels.Add(channel);
             result.WorkspaceId = searchedWorkspace.WorkspaceId;
-            var res = Query<Workspace>.EQ(pd => pd.WorkspaceId, searchedWorkspace.WorkspaceId);
-            var operation = Update<Workspace>.Replace(result);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(res, operation);
+            var filter = new FilterDefinitionBuilder<Workspace>().Where(r => r.Id == result.WorkspaceId);
+            await _dbWorkSpace.ReplaceOneAsync(filter, result);
             return channel;
         }
-        public Channel CreateDefaultChannel(Channel channel, string workspaceName)
+        public async Task<Channel> CreateDefaultChannel(Channel channel, string workspaceName)
         {
-            var searchedWorkspace = GetWorkspaceByName(workspaceName);
+            
+            var searchedWorkspace = GetWorkspaceByName(workspaceName).Result;
             channel.WorkspaceId = searchedWorkspace.WorkspaceId;
-            _dbChannel.GetCollection<Channel>("Channel").Save(channel);
-            var result = GetWorkspaceById(searchedWorkspace.WorkspaceId);
+            await _dbChannel.InsertOneAsync(channel);
+            var result = GetWorkspaceById(searchedWorkspace.WorkspaceId).Result;
             result.DefaultChannels.Add(channel);
             result.WorkspaceId = searchedWorkspace.WorkspaceId;
-            var res = Query<Workspace>.EQ(pd => pd.WorkspaceId, searchedWorkspace.WorkspaceId);
-            var operation = Update<Workspace>.Replace(result);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(res, operation);
+            var filter = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == result.WorkspaceId);
+            await _dbWorkSpace.ReplaceOneAsync(filter,result);
             return channel;
         }
-        public Channel GetChannelById(string channelId)
+        public async Task<Channel> GetChannelById(string channelId)
         {
-            var result = Query<Channel>.EQ(p => p.ChannelId, channelId);
-            return _dbChannel.GetCollection<Channel>("Channel").FindOne(result);
+            return await _dbChannel.Find(w => w.ChannelId == channelId).FirstOrDefaultAsync();
         }
-        public User AddUserToChannel(User newUser, string channelId)
+        public async Task<User> AddUserToChannel(User newUser, string channelId)
         {
 
             // add user to channel and updating channel
-            var resultChannel = GetChannelById(channelId);
+            var resultChannel = GetChannelById(channelId).Result;
             resultChannel.Users.Add(newUser);
             resultChannel.ChannelId = channelId;
-            var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
-            var operation = Update<Channel>.Replace(resultChannel);
-            _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
+            var filter = new FilterDefinitionBuilder<Channel>().Where(r => r.ChannelId == resultChannel.ChannelId);
+            var update = Builders<Channel>.Update
+                .Set(r => r.ChannelId, resultChannel.ChannelId)
+                .Set(r => r.Users, resultChannel.Users);
+            await _dbChannel.UpdateOneAsync(filter, update);
 
             // update channel in workspace
-            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
             resultWorkspace.Channels.First(i => i.ChannelId == channelId).Users.Add(newUser);
-            var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
-            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
+            var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == resultChannel.WorkspaceId);
+            var updateWorkspace = Builders<Workspace>.Update
+                .Set(r => r.Channels, resultWorkspace.Channels)
+                .Set(r => r.WorkspaceId, resultChannel.WorkspaceId);
+            await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
             return newUser;
 
         }
-        public User AddUserToDefaultChannel(User newUser, string channelId)
+        public async Task<User> AddUserToDefaultChannel(User newUser, string channelId)
         {
 
             // add user to default channel and updating channel
-            var resultChannel = GetChannelById(channelId);
+            var resultChannel = GetChannelById(channelId).Result;
             resultChannel.Users.Add(newUser);
             resultChannel.Admin = newUser;
             resultChannel.ChannelId = channelId;
-            var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
-            var operation = Update<Channel>.Replace(resultChannel);
-            _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
+            var filter = new FilterDefinitionBuilder<Channel>().Where(r => r.ChannelId == resultChannel.ChannelId);
+            var update = Builders<Channel>.Update
+                .Set(r => r.ChannelId, resultChannel.ChannelId)
+                .Set(r => r.Users, resultChannel.Users);
+            await _dbChannel.UpdateOneAsync(filter, update);
 
-            // update channel in workspace
-            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
             resultWorkspace.DefaultChannels.First(i => i.ChannelId == channelId).Users.Add(newUser);
-            var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
-            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
+            var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == resultChannel.WorkspaceId);
+            var updateWorkspace = Builders<Workspace>.Update
+                .Set(r => r.DefaultChannels, resultWorkspace.DefaultChannels)
+                .Set(r => r.WorkspaceId, resultChannel.WorkspaceId);
+            await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
             return newUser;
 
         }
-        public Message AddMessageToChannel(Message message, string channelId, string senderMail)
+        public async Task<Message> AddMessageToChannel(Message message, string channelId, string senderMail)
         {
 
-            // add user to channel and updating channel
-            var resultChannel = GetChannelById(channelId);
-            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+            
+            var resultChannel = GetChannelById(channelId).Result;
+            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
             var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
             Message newMessage = message;
-            _dbMessage.GetCollection<Message>("Workspace").Save(newMessage);
+            await _dbMessage.InsertOneAsync(newMessage);
             if (resultChannel.Messages.Count() < 50)
             {
                 resultChannel.Messages.Add(newMessage);
@@ -169,54 +173,71 @@ namespace RTMService.Services
             }
 
             resultChannel.ChannelId = channelId;
-            var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
-            var operation = Update<Channel>.Replace(resultChannel);
-            _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
+            var filter = new FilterDefinitionBuilder<Channel>().Where(r => r.ChannelId == resultChannel.ChannelId);
+            var update = Builders<Channel>.Update
+                .Set(r => r.ChannelId, resultChannel.ChannelId)
+                .Set(r => r.Messages, resultChannel.Messages);
+            await _dbChannel.UpdateOneAsync(filter, update);
             return newMessage;
 
         }
 
-        public void DeleteChannel(string channelId)
+        public async Task DeleteChannel(string channelId)
         {
-            var channelresult = GetChannelById(channelId);
-            var result = Query<Channel>.EQ(e => e.ChannelId, channelId);
-            var operation = _dbChannel.GetCollection<Channel>("Channel").Remove(result);
-            var workspace = GetWorkspaceById(channelresult.WorkspaceId);
+            var channelresult = GetChannelById(channelId).Result;
+            await _dbChannel.DeleteOneAsync(w => w.ChannelId == channelId);
+            var workspace = GetWorkspaceById(channelresult.WorkspaceId).Result;
             var channelToDelete = workspace.Channels.Find(c => c.ChannelId == channelId);
+            try
+            {
+                workspace.Channels.Remove(channelToDelete);
+            }
+            catch
+            {
+                workspace.DefaultChannels.Remove(channelToDelete);
+            }
             workspace.Channels.Remove(channelToDelete);
-            var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, channelresult.WorkspaceId);
-            var operationWorkspace = Update<Workspace>.Replace(workspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
+            var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == channelresult.WorkspaceId);
+            var updateWorkspace = Builders<Workspace>.Update
+                .Set(r => r.DefaultChannels, workspace.DefaultChannels)
+                .Set(r => r.Channels,workspace.Channels)
+                .Set(r => r.WorkspaceId, workspace.WorkspaceId);
+            await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
 
         }
-        //not working 
-        public void DeleteUserFromChannel(string emailId, string channelId)
+        public async Task DeleteUserFromChannel(string emailId, string channelId)
         {
-            var channel = GetChannelById(channelId);
+            var channel = GetChannelById(channelId).Result;
 
             var resultUser = channel.Users.Find(u => u.EmailId == emailId);//GetUserByEmail(emailId);
 
             channel.Users.Remove(resultUser);
-            var resultChannel = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
-            var operationChannel = Update<Channel>.Replace(channel);
-            _dbChannel.GetCollection<Channel>("Channel").Update(resultChannel, operationChannel);
+            channel.ChannelId = channelId;
+            var filter = new FilterDefinitionBuilder<Channel>().Where(r => r.ChannelId == channel.ChannelId);
+            var update = Builders<Channel>.Update
+                .Set(r => r.ChannelId, channel.ChannelId)
+                .Set(r => r.Users, channel.Users);
+            await _dbChannel.UpdateOneAsync(filter, update);
 
-            var resultWorkspace = GetWorkspaceById(channel.WorkspaceId);
+            var resultWorkspace = GetWorkspaceById(channel.WorkspaceId).Result;
             resultWorkspace.WorkspaceId = channel.WorkspaceId;
-            var userToDelete=  resultWorkspace.Channels.Find(c => c.ChannelId == channelId).Users.Find(u => u.EmailId == emailId);
+            var userToDelete = resultWorkspace.Channels.Find(c => c.ChannelId == channelId).Users.Find(u => u.EmailId == emailId);
             resultWorkspace.Channels.Find(c => c.ChannelId == channelId).Users.Remove(userToDelete);
-            var result = Query<Workspace>.EQ(pd => pd.WorkspaceId, channel.WorkspaceId);
-            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(result, operationWorkspace);
+            var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == resultWorkspace.WorkspaceId);
+            var updateWorkspace = Builders<Workspace>.Update
+                .Set(r => r.DefaultChannels, resultWorkspace.DefaultChannels)
+                .Set(r => r.Channels, resultWorkspace.Channels)
+                .Set(r => r.WorkspaceId, resultWorkspace.WorkspaceId);
+            await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
         }
 
         public List<User> GetAllUsersInWorkspace(string workspaceName)
         {
-            var resultWorkspace = GetWorkspaceByName(workspaceName);
+            var resultWorkspace = GetWorkspaceByName(workspaceName).Result;
             return resultWorkspace.Users;
         }
 
-        public User AddUserToWorkspace(UserAccountView newuser, string workspaceName)
+        public async Task<User> AddUserToWorkspace(UserAccountView newuser, string workspaceName)
         {
             User user = new User
             {
@@ -225,35 +246,30 @@ namespace RTMService.Services
                 FirstName = newuser.FirstName,
                 LastName = newuser.LastName
             };
-            _dbUser.GetCollection<User>("User").Save(user);
-          
-            var resultWorkspace = GetWorkspaceByName(workspaceName);
+            await _dbUser.InsertOneAsync(user);
+
+            var resultWorkspace = GetWorkspaceByName(workspaceName).Result;
             resultWorkspace.Users.Add(user);
-            var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceName, workspaceName);
-            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
+            var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == resultWorkspace.WorkspaceId);
+            var updateWorkspace = Builders<Workspace>.Update
+                .Set(r => r.Users, resultWorkspace.Users)
+                .Set(r => r.WorkspaceId, resultWorkspace.WorkspaceId);
+            await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
 
             var listOfDefaultChannels = resultWorkspace.DefaultChannels;
-            foreach(var defaultChannel in listOfDefaultChannels)
+            foreach (var defaultChannel in listOfDefaultChannels)
             {
-                AddUserToDefaultChannel(user, defaultChannel.ChannelId);
+                await AddUserToDefaultChannel(user, defaultChannel.ChannelId);
             }
 
             return user;
         }
-
-        //public Channel GetGeneralChannelIdByWorkSpaceName(string workSpaceName)
-        //{
-        //    var resultWorkspace = GetWorkspaceByName(workSpaceName);
-        //    var generalChannel = resultWorkspace.Channels.Find(i => i.ChannelName == "general");
-        //    return generalChannel;
-        //}
         public Channel GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName)
         {
-            var workspace = GetWorkspaceByName(workspaceName);
+            var workspace = GetWorkspaceByName(workspaceName).Result;
             var channel = workspace.Channels.FindAll(m => (m.ChannelName == "") && m.Users.Any(u => u.EmailId == senderMail));
             var oneToOneChannel = channel.Find(c => c.Users.Any(u => u.EmailId == receiverMail));
-            if(oneToOneChannel == null)
+            if (oneToOneChannel == null)
             {
                 var sender = GetUserByEmail(senderMail, workspaceName);
                 var receiver = GetUserByEmail(receiverMail, workspaceName);
@@ -264,39 +280,36 @@ namespace RTMService.Services
                 };
                 newOneToOneChannel.Users.Add(sender);
                 newOneToOneChannel.Users.Add(receiver);
-                oneToOneChannel = CreateChannel(newOneToOneChannel, workspaceName);
+                oneToOneChannel = CreateChannel(newOneToOneChannel, workspaceName).Result;
             }
             return oneToOneChannel;
         }
 
 
-        public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId)
+        public async Task<List<Channel>> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId)
         {
-            var workspace = GetWorkspaceByName(workSpaceName);
-            var result = Query<Channel>.Where(p => (p.WorkspaceId== workspace.WorkspaceId) && (p.ChannelName!="") && (p.Users.Any(u => u.EmailId==emailId)));          
-            return _dbChannel.GetCollection<Channel>("Channel").Find(result).ToList();
-            
+            var workspace = GetWorkspaceByName(workSpaceName).Result;
+            return await _dbChannel.Find(p => (p.WorkspaceId == workspace.WorkspaceId) && (p.ChannelName != "") && (p.Users.Any(u => u.EmailId == emailId))).ToListAsync();
+
         }
 
-        public List<Channel> GetAllChannelsInWorkspace(string workSpaceName)
+        public async Task<List<Channel>> GetAllChannelsInWorkspace(string workSpaceName)
         {
 
-            var workspace = GetWorkspaceByName(workSpaceName);
+            var workspace = GetWorkspaceByName(workSpaceName).Result;
             var result = Query<Channel>.Where(p => (p.WorkspaceId == workspace.WorkspaceId) && (p.ChannelName != ""));
-            return _dbChannel.GetCollection<Channel>("Channel").Find(result).ToList();
+            return await _dbChannel.Find(p => (p.WorkspaceId == workspace.WorkspaceId) && (p.ChannelName != "")).ToListAsync();
 
 
         }
 
         public User GetUserByEmail(string emailId, string workspaceName)
         {
-            var resultWorkspace = GetWorkspaceByName(workspaceName);
+            var resultWorkspace =  GetWorkspaceByName(workspaceName).Result;
             var user = resultWorkspace.Users.Find(u => u.EmailId == emailId);
             return user;
-            //var result = Query<User>.EQ(p => p.EmailId, emailId);
-            //return _dbUser.GetCollection<User>("User").FindOne(result);
         }
 
-        
+
     }
 }
