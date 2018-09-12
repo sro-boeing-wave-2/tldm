@@ -22,8 +22,20 @@ export class ChatService {
 
   private listOfUsers = new BehaviorSubject([]);
   currentListOfUsers = this.listOfUsers.asObservable();
+  user: User;
+ private currentUser = new BehaviorSubject(this.user);
+ currentuser = this.currentUser.asObservable();
 
-  private _chaturl = "http://172.23.238.230:5004/api/chat/workspaces";///////check port
+ channel: Channel;
+ private channelSelected = new BehaviorSubject(this.channel);
+ channelselected = this.channelSelected.asObservable();
+
+  // private _chaturl = "http://172.23.238.230:5004/api/chat/workspaces";///////check port
+
+ private _chaturl = "http://172.23.238.165:7000/connect/api/chat/workspaces";
+
+//  private _ipaddress = "http://172.23.238.165:7000";
+ private inviteusers: string = "http://172.23.238.165:7000/onboard/invite";
 
   constructor(private http: HttpClient) { }
 
@@ -34,6 +46,14 @@ export class ChatService {
 
   setListOfUsers (listofusers:User[]){
     this.listOfUsers.next(listofusers);
+  }
+
+  setCurrentUser(user: User){
+    this.currentUser.next(user);
+  }
+
+  setChannelSelected(channel:Channel){
+    this.channelSelected.next(channel);
   }
 
   CreateWorkspace(workspace: Workspace): Observable<Workspace> {
@@ -88,8 +108,26 @@ export class ChatService {
     );
   }
 
+  addMemberToChannel(user:User, channelid:string):Observable<Channel> {
+    const url = `${this._chaturl + "/channel"}/${channelid}`;
+    console.log(url);
+    return this.http.put(url, user, httpOptions).pipe(
+      catchError(this.handleError<any>('addMemberToChannel')
+    ));
+  }
 
+  /*============================================================== */
+  sendInviteMail(email: any) {
+    console.log(email);
+    return this.http.post(this.inviteusers, email, httpOptions);
+  }
 
+  // showEmailId(message: string) {
+  //   console.log(message);
+  //   this.messageSourceEmail.next(message)
+  // }
+
+  /*============================================================== */
 
   /**
  * Handle Http operation that failed.

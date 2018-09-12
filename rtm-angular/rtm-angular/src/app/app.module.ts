@@ -14,6 +14,7 @@ import { HttpModule } from '@angular/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './/app-routing.module';
 import { ChatService } from './chat.service';
+import { ScrollDispatchModule } from '@angular/cdk/scrolling'
 
 import {
   MatAutocompleteModule,
@@ -47,13 +48,18 @@ import {
 } from '@angular/material';
 import { AddChannelComponent } from './add-channel/add-channel.component';
 import { MainContentComponent } from './main-content/main-content.component';
+import { InviteMembersComponent } from './invite-members/invite-members.component';
+import { AddMembersToChannelComponent } from './add-members-to-channel/add-members-to-channel.component';
 @NgModule({
   declarations: [
     AppComponent,
     AddChannelComponent,
-    MainContentComponent
+    MainContentComponent,
+    InviteMembersComponent,
+    AddMembersToChannelComponent
   ],
   imports: [
+    ScrollDispatchModule,
     AppRoutingModule,
     ReactiveFormsModule,
     BrowserModule,
