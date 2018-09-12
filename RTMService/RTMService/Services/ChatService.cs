@@ -134,6 +134,7 @@ namespace RTMService.Services
             // add user to default channel and updating channel
             var resultChannel = GetChannelById(channelId);
             resultChannel.Users.Add(newUser);
+            resultChannel.Admin = newUser;
             resultChannel.ChannelId = channelId;
             var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
             var operation = Update<Channel>.Replace(resultChannel);
@@ -171,30 +172,6 @@ namespace RTMService.Services
             var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
             var operation = Update<Channel>.Replace(resultChannel);
             _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
-
-            // update channel in workspace
-            // var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
-           // try
-           // {
-           //     resultWorkspace.Channels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
-           // }
-           // catch
-           // {
-
-           // }
-           // try
-           // {
-           //     resultWorkspace.DefaultChannels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
-           // }
-           // catch
-           // {
-
-           // }
-           //// resultWorkspace.Channels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
-           // //resultWorkspace.DefaultChannels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
-           // var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
-           // var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-           // _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
             return newMessage;
 
         }
@@ -276,6 +253,19 @@ namespace RTMService.Services
             var workspace = GetWorkspaceByName(workspaceName);
             var channel = workspace.Channels.FindAll(m => (m.ChannelName == "") && m.Users.Any(u => u.EmailId == senderMail));
             var oneToOneChannel = channel.Find(c => c.Users.Any(u => u.EmailId == receiverMail));
+            if(oneToOneChannel == null)
+            {
+                var sender = GetUserByEmail(senderMail, workspaceName);
+                var receiver = GetUserByEmail(receiverMail, workspaceName);
+                Channel newOneToOneChannel = new Channel
+                {
+                    ChannelName = "",
+
+                };
+                newOneToOneChannel.Users.Add(sender);
+                newOneToOneChannel.Users.Add(receiver);
+                oneToOneChannel = CreateChannel(newOneToOneChannel, workspaceName);
+            }
             return oneToOneChannel;
         }
 
