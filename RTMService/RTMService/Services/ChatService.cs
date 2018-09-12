@@ -56,15 +56,7 @@ namespace RTMService.Services
             };
 
             _dbWorkSpace.GetCollection<Workspace>("Workspace").Save(newWorkspace);
-            //User user = new User
-            //{
-            //    UserId = workSpace.UserWorkspaces[0].UserAccount.Id,
-            //    EmailId = workSpace.UserWorkspaces[0].UserAccount.EmailId,
-            //    FirstName = workSpace.UserWorkspaces[0].UserAccount.FirstName,
-            //    LastName = workSpace.UserWorkspaces[0].UserAccount.LastName
-            //};
-            //_dbUser.GetCollection<User>("User").Save(user);
-            //AddUserToWorkspace(user, newWorkspace.WorkspaceName);
+            //creating default channels
             foreach(var channel in workSpace.Channels)
             {
                 Channel newChannel = new Channel
@@ -73,8 +65,8 @@ namespace RTMService.Services
                     //Admin = user,
                     WorkspaceId = newWorkspace.WorkspaceId
                 };
-               // newChannel.Users.Add(user);
-                CreateChannel(newChannel, workSpace.WorkspaceName);
+                // newChannel.Users.Add(user);
+                CreateDefaultChannel(newChannel, workSpace.WorkspaceName);
             }
 
              return GetWorkspaceByName(workSpace.WorkspaceName);
@@ -92,6 +84,19 @@ namespace RTMService.Services
             _dbChannel.GetCollection<Channel>("Channel").Save(channel);
             var result = GetWorkspaceById(searchedWorkspace.WorkspaceId);
             result.Channels.Add(channel);
+            result.WorkspaceId = searchedWorkspace.WorkspaceId;
+            var res = Query<Workspace>.EQ(pd => pd.WorkspaceId, searchedWorkspace.WorkspaceId);
+            var operation = Update<Workspace>.Replace(result);
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(res, operation);
+            return channel;
+        }
+        public Channel CreateDefaultChannel(Channel channel, string workspaceName)
+        {
+            var searchedWorkspace = GetWorkspaceByName(workspaceName);
+            channel.WorkspaceId = searchedWorkspace.WorkspaceId;
+            _dbChannel.GetCollection<Channel>("Channel").Save(channel);
+            var result = GetWorkspaceById(searchedWorkspace.WorkspaceId);
+            result.DefaultChannels.Add(channel);
             result.WorkspaceId = searchedWorkspace.WorkspaceId;
             var res = Query<Workspace>.EQ(pd => pd.WorkspaceId, searchedWorkspace.WorkspaceId);
             var operation = Update<Workspace>.Replace(result);
@@ -123,20 +128,36 @@ namespace RTMService.Services
             return newUser;
 
         }
-        public Message AddMessageToChannel(string message, string channelId, string senderMail)
+        public User AddUserToDefaultChannel(User newUser, string channelId)
+        {
+
+            // add user to default channel and updating channel
+            var resultChannel = GetChannelById(channelId);
+            resultChannel.Users.Add(newUser);
+            resultChannel.ChannelId = channelId;
+            var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
+            var operation = Update<Channel>.Replace(resultChannel);
+            _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
+
+            // update channel in workspace
+            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+            resultWorkspace.DefaultChannels.First(i => i.ChannelId == channelId).Users.Add(newUser);
+            var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
+            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
+            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
+            return newUser;
+
+        }
+        public Message AddMessageToChannel(Message message, string channelId, string senderMail)
         {
 
             // add user to channel and updating channel
             var resultChannel = GetChannelById(channelId);
             var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
             var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
-            Message newMessage = new Message
-            {
-                MessageBody = message,
-                Sender = resultSender,
-                Timestamp = DateTime.Now,
-            };
-            if(resultChannel.Messages.Count() < 50)
+            Message newMessage = message;
+            _dbMessage.GetCollection<Message>("Workspace").Save(newMessage);
+            if (resultChannel.Messages.Count() < 50)
             {
                 resultChannel.Messages.Add(newMessage);
             }
@@ -145,18 +166,35 @@ namespace RTMService.Services
                 resultChannel.Messages.RemoveAt(0);
                 resultChannel.Messages.Add(newMessage);
             }
-            
+
             resultChannel.ChannelId = channelId;
             var res = Query<Channel>.EQ(pd => pd.ChannelId, channelId);
             var operation = Update<Channel>.Replace(resultChannel);
             _dbChannel.GetCollection<Channel>("Channel").Update(res, operation);
 
             // update channel in workspace
-           // var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
-            resultWorkspace.Channels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
-            var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
-            var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
-            _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
+            // var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId);
+           // try
+           // {
+           //     resultWorkspace.Channels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
+           // }
+           // catch
+           // {
+
+           // }
+           // try
+           // {
+           //     resultWorkspace.DefaultChannels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
+           // }
+           // catch
+           // {
+
+           // }
+           //// resultWorkspace.Channels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
+           // //resultWorkspace.DefaultChannels.First(i => i.ChannelId == channelId).Messages.Add(newMessage);
+           // var resWorkspace = Query<Workspace>.EQ(pd => pd.WorkspaceId, resultWorkspace.WorkspaceId);
+           // var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
+           // _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resWorkspace, operationWorkspace);
             return newMessage;
 
         }
@@ -211,11 +249,19 @@ namespace RTMService.Services
                 LastName = newuser.LastName
             };
             _dbUser.GetCollection<User>("User").Save(user);
+          
             var resultWorkspace = GetWorkspaceByName(workspaceName);
             resultWorkspace.Users.Add(user);
             var resworkspace = Query<Workspace>.EQ(pd => pd.WorkspaceName, workspaceName);
             var operationWorkspace = Update<Workspace>.Replace(resultWorkspace);
             _dbWorkSpace.GetCollection<Workspace>("Workspace").Update(resworkspace, operationWorkspace);
+
+            var listOfDefaultChannels = resultWorkspace.DefaultChannels;
+            foreach(var defaultChannel in listOfDefaultChannels)
+            {
+                AddUserToDefaultChannel(user, defaultChannel.ChannelId);
+            }
+
             return user;
         }
 
@@ -237,17 +283,19 @@ namespace RTMService.Services
         public List<Channel> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId)
         {
             var workspace = GetWorkspaceByName(workSpaceName);
-            var listOfChannels = workspace.Channels.FindAll(m => (m.ChannelName != "") && m.Users.Any(u => u.EmailId == emailId));
-            return listOfChannels;
+            var result = Query<Channel>.Where(p => (p.WorkspaceId== workspace.WorkspaceId) && (p.ChannelName!="") && (p.Users.Any(u => u.EmailId==emailId)));          
+            return _dbChannel.GetCollection<Channel>("Channel").Find(result).ToList();
+            
         }
 
         public List<Channel> GetAllChannelsInWorkspace(string workSpaceName)
         {
-            
-                var workspace = GetWorkspaceByName(workSpaceName);
-                return workspace.Channels;
-           
-            
+
+            var workspace = GetWorkspaceByName(workSpaceName);
+            var result = Query<Channel>.Where(p => (p.WorkspaceId == workspace.WorkspaceId) && (p.ChannelName != ""));
+            return _dbChannel.GetCollection<Channel>("Channel").Find(result).ToList();
+
+
         }
 
         public User GetUserByEmail(string emailId, string workspaceName)

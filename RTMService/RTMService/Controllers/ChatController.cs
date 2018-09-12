@@ -199,24 +199,24 @@ namespace RTMService.Controllers
             catch { }
             var userAdded = iservice.AddUserToWorkspace(user,workspaceName);
             //creating channels for new user with all other existing users
-            List<User> ListOfAllUsersInWorkspace = iservice.GetAllUsersInWorkspace(workspaceName);
+            //List<User> ListOfAllUsersInWorkspace = iservice.GetAllUsersInWorkspace(workspaceName);
 
-            foreach (var ExistingUser in ListOfAllUsersInWorkspace)
-            {
-                if(ExistingUser.EmailId!= userAdded.EmailId)
-                {
-                    Channel newChannel = new Channel
-                    {
-                        //creating unique channel name
-                        ChannelName = ""//ExistingUser.UserId + userAdded.UserId,
+            //foreach (var ExistingUser in ListOfAllUsersInWorkspace)
+            //{
+            //    if(ExistingUser.EmailId!= userAdded.EmailId)
+            //    {
+            //        Channel newChannel = new Channel
+            //        {
+            //            //creating unique channel name
+            //            ChannelName = ""//ExistingUser.UserId + userAdded.UserId,
                      
-                    };
-                    newChannel.Users.Add(userAdded);
-                    newChannel.Users.Add(ExistingUser);
-                    iservice.CreateChannel(newChannel, workspaceName);
-                }
+            //        };
+            //        newChannel.Users.Add(userAdded);
+            //        newChannel.Users.Add(ExistingUser);
+            //        iservice.CreateChannel(newChannel, workspaceName);
+            //    }
                 
-            }
+            //}
 
             return new ObjectResult(userAdded);
         }

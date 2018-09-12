@@ -12,6 +12,7 @@ namespace RTMService.Models
         public Workspace()
         {
             this.Channels = new List<Channel>();
+            this.DefaultChannels = new List<Channel>();
             this.Users = new List<User>();
         }
 
@@ -27,6 +28,9 @@ namespace RTMService.Models
 
         [BsonElement("channels")]
         public List<Channel> Channels { get; set; }
+
+        [BsonElement("defaultChannels")]
+        public List<Channel> DefaultChannels { get; set; }
 
         [BsonElement("users")]
         public List<User> Users { get; set; }

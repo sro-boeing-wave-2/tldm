@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using RTMService.Models;
 using RTMService.Services;
 using System;
 using System.Collections.Generic;
@@ -49,11 +50,11 @@ namespace RTMService.Hubs
             Clients.Groups(groups).SendAsync("SendMessageToGroups", sender, message);
         }
 
-        public void SendMessageInChannel(string sender, string message, string channelId)
+        public void SendMessageInChannel(string sender, Message message, string channelId)
         {
             Groups.AddToGroupAsync(Context.ConnectionId, channelId);
-            Clients.Group(channelId).SendAsync("SendMessageInChannel", sender, message);
-            iservice.AddMessageToChannel(message, channelId, sender);
+            var newMessage = iservice.AddMessageToChannel(message, channelId, sender);
+            Clients.Group(channelId).SendAsync("SendMessageInChannel", sender, newMessage);
             //Clients.Client(Context.ConnectionId).SendAsync(channelId);
         }
         //public override Task OnConnectedAsync()
