@@ -271,7 +271,7 @@ namespace RTMService.Controllers
            {
                return BadRequest(ModelState);
            }
-           Channel channel = iservice.GetChannelForOneToOneChat(senderMail, receiverMail, workspaceName);
+           Channel channel = iservice.GetChannelForOneToOneChat(senderMail, receiverMail, workspaceName).Result;
            return new ObjectResult(channel);
        }
 

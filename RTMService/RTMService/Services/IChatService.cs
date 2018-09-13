@@ -26,7 +26,8 @@ namespace RTMService.Services
         Task<Channel> GetChannelById(string channelId);
         Task<List<Channel>> GetAllUserChannelsInWorkSpace(string workSpaceName, string emailId);
         Task<List<Channel>> GetAllChannelsInWorkspace(string workSpaceName);
-        Channel GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName);
+        Task<string> GetChannelIdForOneToOneChat(string senderMail, string receiverMail, string workspaceId);
+        Task<Channel> GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName);
         ////Channel GetGeneralChannelIdByWorkSpaceName(string workSpaceName);
         Task DeleteChannel(string channelId);
         ////Task<Channel> UpdateChannel(Channel channel);

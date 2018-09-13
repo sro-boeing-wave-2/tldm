@@ -16,6 +16,7 @@ namespace RTMService.Services
         IMongoCollection<Channel> _dbChannel;
         IMongoCollection<User> _dbUser;
         IMongoCollection<Message> _dbMessage;
+        IMongoCollection<OneToOneChannelInfo> _dbOneToOne;
 
         public ChatService()
         {
@@ -25,6 +26,7 @@ namespace RTMService.Services
             _dbChannel = _client.GetDatabase("AllChannels").GetCollection<Channel>("Channel");
             _dbUser = _client.GetDatabase("AllUsers").GetCollection<User>("User");
             _dbMessage = _client.GetDatabase("AllMessages").GetCollection<Message>("Message");
+            _dbOneToOne = _client.GetDatabase("OneToOneTable").GetCollection<OneToOneChannelInfo>("OneToOne");
 
         }
 
@@ -101,6 +103,14 @@ namespace RTMService.Services
             await _dbWorkSpace.ReplaceOneAsync(filter,result);
             return channel;
         }
+        public async Task<Channel> CreateOneToOneChannel(Channel channel, string workspaceName)
+        {
+
+            var searchedWorkspace = GetWorkspaceByName(workspaceName).Result;
+            channel.WorkspaceId = searchedWorkspace.WorkspaceId;
+            await _dbChannel.InsertOneAsync(channel);
+            return channel;
+        }
         public async Task<Channel> GetChannelById(string channelId)
         {
             return await _dbChannel.Find(w => w.ChannelId == channelId).FirstOrDefaultAsync();
@@ -159,7 +169,7 @@ namespace RTMService.Services
             
             var resultChannel = GetChannelById(channelId).Result;
             var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
-            var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
+            //var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
             Message newMessage = message;
             await _dbMessage.InsertOneAsync(newMessage);
             if (resultChannel.Messages.Count() < 50)
@@ -258,12 +268,32 @@ namespace RTMService.Services
 
             return user;
         }
-        public Channel GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName)
+        public async Task<string> GetChannelIdForOneToOneChat(string senderMail, string receiverMail, string workspaceId)
+        {
+            try
+            {
+                var entry = await _dbOneToOne.
+                Find(o => o.WorkspaceId == workspaceId &&
+                o.Users.Any(u => u == senderMail) &&
+                o.Users.Any(u => u == receiverMail)).
+                FirstOrDefaultAsync();
+                return entry.ChannelId;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public async Task<Channel> GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName)
         {
             var workspace = GetWorkspaceByName(workspaceName).Result;
-            var channel = workspace.Channels.FindAll(m => (m.ChannelName == "") && m.Users.Any(u => u.EmailId == senderMail));
-            var oneToOneChannel = channel.Find(c => c.Users.Any(u => u.EmailId == receiverMail));
-            if (oneToOneChannel == null)
+            var channelId = GetChannelIdForOneToOneChat(senderMail, receiverMail,workspace.WorkspaceId).Result;
+            var oneToOneChannel = GetChannelById(channelId);
+            if (oneToOneChannel.Result != null)
+            {
+                return oneToOneChannel.Result;
+            }
+            else
             {
                 var sender = GetUserByEmail(senderMail, workspaceName);
                 var receiver = GetUserByEmail(receiverMail, workspaceName);
@@ -274,9 +304,18 @@ namespace RTMService.Services
                 };
                 newOneToOneChannel.Users.Add(sender);
                 newOneToOneChannel.Users.Add(receiver);
-                oneToOneChannel = CreateChannel(newOneToOneChannel, workspaceName).Result;
+                oneToOneChannel = CreateOneToOneChannel(newOneToOneChannel, workspaceName);
+
+                OneToOneChannelInfo entryOfPersonalChannel = new OneToOneChannelInfo
+                {
+                    ChannelId = oneToOneChannel.Result.ChannelId,
+                    WorkspaceId = workspace.WorkspaceId
+                };
+                entryOfPersonalChannel.Users.Add(senderMail);
+                entryOfPersonalChannel.Users.Add(receiverMail);
+                await _dbOneToOne.InsertOneAsync(entryOfPersonalChannel);
+                return oneToOneChannel.Result;
             }
-            return oneToOneChannel;
         }
 
 
