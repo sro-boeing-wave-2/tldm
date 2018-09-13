@@ -84,7 +84,7 @@ namespace RTMService.Services
             var result = GetWorkspaceById(searchedWorkspace.WorkspaceId).Result;
             result.Channels.Add(channel);
             result.WorkspaceId = searchedWorkspace.WorkspaceId;
-            var filter = new FilterDefinitionBuilder<Workspace>().Where(r => r.Id == result.WorkspaceId);
+            var filter = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == result.WorkspaceId);
             await _dbWorkSpace.ReplaceOneAsync(filter, result);
             return channel;
         }
@@ -188,15 +188,13 @@ namespace RTMService.Services
             await _dbChannel.DeleteOneAsync(w => w.ChannelId == channelId);
             var workspace = GetWorkspaceById(channelresult.WorkspaceId).Result;
             var channelToDelete = workspace.Channels.Find(c => c.ChannelId == channelId);
-            try
-            {
-                workspace.Channels.Remove(channelToDelete);
-            }
-            catch
-            {
-                workspace.DefaultChannels.Remove(channelToDelete);
-            }
+            var defaultChannelToDelete = workspace.DefaultChannels.Find(c => c.ChannelId == channelId);
             workspace.Channels.Remove(channelToDelete);
+            
+            
+                workspace.DefaultChannels.Remove(defaultChannelToDelete);
+            
+           // workspace.Channels.Remove(channelToDelete);
             var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == channelresult.WorkspaceId);
             var updateWorkspace = Builders<Workspace>.Update
                 .Set(r => r.DefaultChannels, workspace.DefaultChannels)
