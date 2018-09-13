@@ -135,7 +135,7 @@ namespace RTMService.Services
             // add user to default channel and updating channel
             var resultChannel = GetChannelById(channelId).Result;
             resultChannel.Users.Add(newUser);
-            resultChannel.Admin = newUser;
+            //resultChannel.Admin = newUser;
             resultChannel.ChannelId = channelId;
             var filter = new FilterDefinitionBuilder<Channel>().Where(r => r.ChannelId == resultChannel.ChannelId);
             var update = Builders<Channel>.Update
@@ -190,11 +190,7 @@ namespace RTMService.Services
             var channelToDelete = workspace.Channels.Find(c => c.ChannelId == channelId);
             var defaultChannelToDelete = workspace.DefaultChannels.Find(c => c.ChannelId == channelId);
             workspace.Channels.Remove(channelToDelete);
-            
-            
-                workspace.DefaultChannels.Remove(defaultChannelToDelete);
-            
-           // workspace.Channels.Remove(channelToDelete);
+            workspace.DefaultChannels.Remove(defaultChannelToDelete);
             var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == channelresult.WorkspaceId);
             var updateWorkspace = Builders<Workspace>.Update
                 .Set(r => r.DefaultChannels, workspace.DefaultChannels)

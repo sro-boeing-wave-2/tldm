@@ -177,9 +177,21 @@ namespace RTMService.Controllers
            var ListofUsers = iservice.GetAllUsersInWorkspace(workspaceName);
            return new ObjectResult(ListofUsers);
        }
+        // // getting channel by ID
+        [HttpGet]
+        [Route("workspaces/channelId/{channelId}")]
+        public IActionResult GetChannelById(string channelId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var channel = iservice.GetChannelById(channelId).Result;
+            return new ObjectResult(channel);
+        }
 
-       //// Adding a user to a workspace
-       [HttpPut]
+        //// Adding a user to a workspace
+        [HttpPut]
        [Route("workspaces/user/{workspaceName}")]
        public IActionResult AddUserToWorkspace([FromBody] UserAccountView user,string workspaceName) // frombody workspace object or string name
        {
@@ -201,8 +213,22 @@ namespace RTMService.Controllers
            return new ObjectResult(userAdded);
        }
 
-       // // getting all channels in a workspace by workspace name
-       [HttpGet]
+        //// Adding a message to channel
+        [HttpPut]
+        [Route("workspaces/message/{channelId}/{senderMail}")]
+        public IActionResult AddMessageToChannel([FromBody] Message message, string channelId,string senderMail) // frombody workspace object or string name
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var newMessage = iservice.AddMessageToChannel(message, channelId,senderMail).Result;
+            return new ObjectResult(newMessage);
+        }
+
+        // getting all channels in a workspace by workspace name
+        [HttpGet]
        [Route("workspaces/channels/{workspaceName}")]
        public IActionResult GetAllChannelsInWorkSpace(string workspaceName)
        {
