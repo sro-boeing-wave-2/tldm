@@ -54,14 +54,14 @@ namespace RTMService.Controllers
         }
         // getting the workspace by id
        [HttpGet]
-       [Route("workspaces/{id}")]
-       public IActionResult GetWorkspaceById(string id)
+       [Route("workspaces/{workspaceName}")]
+       public IActionResult GetWorkspaceByName(string workspaceName)
        {
            if (!ModelState.IsValid)
            {
                return BadRequest(ModelState);
            }
-           var Workspace = iservice.GetWorkspaceById(id).Result;
+           var Workspace = iservice.GetWorkspaceByName(workspaceName).Result;
            if (Workspace == null)
            {
                return NotFound("No Workspcae Found");

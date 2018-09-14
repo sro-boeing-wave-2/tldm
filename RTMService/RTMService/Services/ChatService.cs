@@ -269,7 +269,7 @@ namespace RTMService.Services
             return user;
         }
         public async Task<string> GetChannelIdForOneToOneChat(string senderMail, string receiverMail, string workspaceId)
-        {
+        {     
             try
             {
                 var entry = await _dbOneToOne.
