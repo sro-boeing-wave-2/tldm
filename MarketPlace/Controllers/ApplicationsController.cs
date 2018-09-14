@@ -21,11 +21,29 @@ namespace MarketPlace.Controllers
         }
 
         // GET: api/Applications
+
+        
+
         [HttpGet]
         public async Task<IEnumerable<Application>> GetApplication()
         {
             var AllApplications = await _context.Application.Select(s => s).ToListAsync();
             return AllApplications;
+        }
+
+        [HttpGet("all")]
+        public async Task<IQueryable<Object>> GetApplications()
+        {
+            var applications = from app in _context.Application
+                        select new
+                        {
+                            Name=app.Name,
+                            Info=app.Info,
+                            Developer=app.Developer,
+                            AppUrl=app.AppUrl,
+                            logoUrl=app.LogoUrl
+                        };
+            return applications;
         }
 
         // GET: api/Applications/5

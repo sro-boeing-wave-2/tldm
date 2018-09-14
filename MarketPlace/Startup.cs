@@ -80,7 +80,7 @@ namespace MarketPlace
             //context.Database.Migrate();
             app.UseAuthentication();
             app.UseCors("AppPolicy");
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
