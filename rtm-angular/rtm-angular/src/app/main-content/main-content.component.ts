@@ -220,6 +220,7 @@ export class MainContentComponent implements OnInit {
   currentuser:User;
   //directMessageChat: Channel[] = [];
   channelSelected:Channel;
+  workspaceObject: Workspace;
   messageObject: Message = {
     "messageId":"",
     "messageBody":"",
@@ -259,25 +260,31 @@ export class MainContentComponent implements OnInit {
     this.emailId = this.orderObj["params"]["email"];
     this.workspaceName = this.orderObj["params"]["workspace"];
     this.chatservice.setEmailAndWorkspace(this.emailId, this.workspaceName);
+
+    //get workspace object
+    this.chatservice.getWorkspaceObjectByWorspaceName(this.workspaceName)
+      .subscribe(s => {
+        this.workspaceObject = s;
+        this.allUsers = s.users;
+        this.channelArray = s.channels;
+        console.log(s)
+      });
+
+    console.log(this.workspaceObject);
+    //this.allUsers = this.workspaceObject.users;
+    //this.channelArray = this.workspaceObject.channels;
+
     //Get list of users in the workspace
-    this.getListOfUsersInWorkspace();
-    console.log(this.allUsers);
+    //this.getListOfUsersInWorkspace();
+    //console.log(this.allUsers);
     //this.currentuser = this.allUsers.find(x => x.emailId == this.emailId);
     //console.log(currentUser);
     this.chatservice.setListOfUsers(this.allUsers);
     //Get list of channels in workspace
-    this.ListAllChannels();
+    //this.ListAllChannels();
+    console.log(this.workspaceObject);
   }
-  getListOfUsersInWorkspace() {
-    console.log("get list of users in workspace");
-    console.log(this.workspaceName);
-    this.chatservice.getAllUsersInWorkspace(this.workspaceName)
-      .subscribe(s => {
-        this.allUsers = s;
-        this.currentuser = s.find(x => x.emailId == this.emailId);
-      });
-      console.log(this.allUsers);
-  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -311,48 +318,45 @@ export class MainContentComponent implements OnInit {
     this.chatservice.getChannelIdByWorkspaceName(this.workspaceName)
       .subscribe(s => this.channelId = s.channelId);
   }
-  ListAllChannels(){
-    console.log("in list channel function");
-    this.chatservice.getUserChannels(this.emailId, this.workspaceName)
+
+  getSelectedChannelDetails(channel: Channel) {
+    console.log(this.workspaceObject);
+
+    this.chatservice.getChannelById(channel.channelId)
       .subscribe(s => {
-        console.log(s);
-        this.channelArray = s;
-        //one line to be added for join channel
-        // for(let channel of s){
-        //   let c = channel as Channel;
-        //   //console.log(this.currentuser);
-        //   //var index = c.channelName.indexOf(this.currentuser.userId);
-        //   //console.log(index);
-        //   if(c.channelName.indexOf(this.currentuser.userId) != -1){
-        //     this.directMessageChat.push(c);
-        //     console.log(this.channelArray.indexOf(c))
-        //     this.channelArray.splice(this.channelArray.indexOf(c), 1);
-        //   }
-        // }
-        //console.log(this.directMessageChat);
+        this.channelSelected = s;
+        this.channelmessages = s.messages;
       });
-    console.log(this.channelArray);
-   }
-   getSelectedChannelDetails(channel: Channel) {
-    //console.log("get channel id");
-    //console.log(channel.channelName);
-    this.channelSelected = channel;
+
+    //this.channelSelected = channel;
     console.log(this.channelSelected);
-    //console.log(this.channelSelected);
+
     this.channelName = channel.channelName;
     this.channelId = channel.channelId;
-    //console.log(this.channelName);
-    this.channelmessages = this.channelSelected.messages;
-    console.log(this.channelmessages);
+
+    //this.channelmessages = this.channelSelected.messages;
+
     this.joinChannel(channel.channelId);
   }
-  // @Output()
-  // currentUserEmail = new EventEmitter();
+
+  getDirectMessageDetails(user:User){
+    this.chatservice.getOneToOneChannel(this.emailId, user.emailId, this.workspaceName)
+      .subscribe(s => {
+        this.channelSelected = s;
+        this.channelmessages = s.messages;
+        this.channelId = s.channelId;
+      });
+
+      this.channelName =  user.firstName;
+      this.channelId = this.channelSelected.channelId;
+  }
+
   Channel() {
     this.chatservice.setListOfUsers(this.allUsers);
     this.router.navigate(['addChannel']);
     //this.currentUserEmail.emit(this.emailId);
   }
+
   addMembersToChannel(){
     this.chatservice.setChannelSelected(this.channelSelected);
     this.chatservice.setCurrentUser(this.currentuser);
@@ -360,10 +364,46 @@ export class MainContentComponent implements OnInit {
     //console.log(this.allUsers);
     this.router.navigate(['addMembersToChannel']);
   }
+
   public notify() {
     let audio = new Audio();
     audio.src = "../assets/sounds/unconvinced.mp3";
     audio.load();
     audio.play();
   }
+
+
+  // ListAllChannels(){
+  //   console.log("in list channel function");
+  //   this.chatservice.getUserChannels(this.emailId, this.workspaceName)
+  //     .subscribe(s => {
+  //       console.log(s);
+  //       this.channelArray = s;
+  //       //one line to be added for join channel
+  //       // for(let channel of s){
+  //       //   let c = channel as Channel;
+  //       //   //console.log(this.currentuser);
+  //       //   //var index = c.channelName.indexOf(this.currentuser.userId);
+  //       //   //console.log(index);
+  //       //   if(c.channelName.indexOf(this.currentuser.userId) != -1){
+  //       //     this.directMessageChat.push(c);
+  //       //     console.log(this.channelArray.indexOf(c))
+  //       //     this.channelArray.splice(this.channelArray.indexOf(c), 1);
+  //       //   }
+  //       // }
+  //       //console.log(this.directMessageChat);
+  //     });
+  //   console.log(this.channelArray);
+  //  }
+
+   // getListOfUsersInWorkspace() {
+  //   console.log("get list of users in workspace");
+  //   console.log(this.workspaceName);
+  //   this.chatservice.getAllUsersInWorkspace(this.workspaceName)
+  //     .subscribe(s => {
+  //       this.allUsers = s;
+  //       this.currentuser = s.find(x => x.emailId == this.emailId);
+  //     });
+  //     console.log(this.allUsers);
+  // }
 }

@@ -37,7 +37,7 @@
         </div> -->
         <div *ngIf="allUsers.length>0">
           <div *ngFor="let user of allUsers">
-            <a mat-list-item class="tc-white"><mat-icon class="tc-white" matListIcon>forum</mat-icon>
+            <a mat-list-item class="tc-white" (click)="getDirectMessageDetails(user)"><mat-icon class="tc-white" matListIcon>forum</mat-icon>
               {{user.firstName}} {{user.lastName}}</a>
           </div>
         </div>

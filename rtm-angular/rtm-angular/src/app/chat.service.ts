@@ -30,9 +30,9 @@ export class ChatService {
  private channelSelected = new BehaviorSubject(this.channel);
  channelselected = this.channelSelected.asObservable();
 
-  // private _chaturl = "http://172.23.238.230:5004/api/chat/workspaces";///////check port
+   private _chaturl = "http://172.23.238.230:5004/api/chat/workspaces";///////check port
 
- private _chaturl = "http://172.23.238.165:7000/connect/api/chat/workspaces";
+ //private _chaturl = "http://172.23.238.165:7000/connect/api/chat/workspaces";
 
 //  private _ipaddress = "http://172.23.238.165:7000";
  private inviteusers: string = "http://172.23.238.165:7000/onboard/invite";
@@ -114,6 +114,28 @@ export class ChatService {
     return this.http.put(url, user, httpOptions).pipe(
       catchError(this.handleError<any>('addMemberToChannel')
     ));
+  }
+
+  getWorkspaceObjectByWorspaceName(workspaceName: string):Observable<Workspace>{
+    const url = `${this._chaturl}/${workspaceName}`;
+    return this.http.get(url).pipe(
+      catchError(this.handleError<any>('getWorkspaceObjectByWorspaceName'))
+    )
+  }
+
+  getChannelById(channelId: string):Observable<Channel>{
+    const url = `${this._chaturl +"/channelId"}/${channelId}`;
+    return this.http.get(url).pipe(
+      catchError(this.handleError<any>('getChannelById'))
+    )
+  }
+
+  getOneToOneChannel(senderMail:string, receiverMail:string, workspaceName:string):Observable<Channel>{
+    const url = `${this._chaturl + "/onetoone"}/${workspaceName}/${senderMail}/${receiverMail}`;
+    console.log(url);
+    return this.http.get(url).pipe(
+      catchError(this.handleError<any>('getOneToOneChannel'))
+    )
   }
 
   /*============================================================== */
