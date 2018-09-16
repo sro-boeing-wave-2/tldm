@@ -73,7 +73,6 @@ namespace MarketPlaceBackend.Tests
             var Response = await _client.GetAsync("/api/applications/abcd-efgh");
             var ApplicationAsString = await Response.Content.ReadAsStringAsync();
             JObject applicationObject = JObject.Parse(ApplicationAsString);
-            //Console.WriteLine(applicationObject.GetValue("appUrl"));
 
             Assert.Equal("Github", applicationObject.GetValue("name"));
             Assert.Equal("Github Integration", applicationObject.GetValue("info"));
@@ -81,12 +80,6 @@ namespace MarketPlaceBackend.Tests
             Assert.Equal("www.github.com", applicationObject.GetValue("appUrl"));
             Assert.Equal("www.logo.com", applicationObject.GetValue("logoUrl"));
 
-            //Console.WriteLine(applicationObject.GetValue("name"));
-            //applicationObject.GetValue("name").Should().BeEquivalentTo("Github");
-            //applicationObject.GetValue("info").Should().BeEquivalentTo("Github Integration");
-            //applicationObject.GetValue("appUrl").Should().BeEquivalentTo("www.googledrive.com");
-            //applicationObject.GetValue("developer").Should().BeEquivalentTo("Mr. XYZ");
-            //applicationObject.GetValue("logoUrl").Should().BeEquivalentTo("www.logo.com");
             Response.EnsureSuccessStatusCode();
         }
 
