@@ -31,6 +31,12 @@ namespace MarketPlaceBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(o => o.AddPolicy("AppPolicy", builder =>
+            builder.AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowAnyOrigin()
+                )
+            );
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             if(Environment.IsEnvironment("Testing"))
             {
@@ -62,7 +68,7 @@ namespace MarketPlaceBackend
 
             //var context = app.ApplicationServices.GetService<MarketPlaceBackendContext>();
             //context.Database.Migrate();
-
+            app.UseCors("AppPolicy");
             app.UseHttpsRedirection();
             app.UseMvc();
         }
