@@ -1,6 +1,6 @@
 language: csharp
 
-solution: MarketPlace.sln
+solution: ToDoAssignment.sln
 
 notifications:
 
@@ -19,4 +19,4 @@ dotnet: 2.1
 script:
 
   - dotnet restore
-  - dotnet test MarketPlace.Tests
+  - dotnet test ToDoAssignment.Tests
