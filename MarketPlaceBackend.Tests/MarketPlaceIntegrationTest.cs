@@ -59,7 +59,7 @@ namespace MarketPlaceBackend.Tests
         }
 
         [Fact]
-        public async Task TestGetByIdForNotNullCase()
+        public async Task TestGetByIdForNullCase()
         {
             var Response = await _client.GetAsync("/api/applications/abcd-efgh");
             Assert.Equal("NotFound", Response.StatusCode.ToString());
