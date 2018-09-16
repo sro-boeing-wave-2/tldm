@@ -19,20 +19,27 @@ namespace MarketPlaceBackend
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment; 
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            services.AddDbContext<MarketPlaceBackendContext>(options =>
+            if(Environment.IsEnvironment("Testing"))
+            {
+                services.AddDbContext<MarketPlaceBackendContext>(options => options.UseInMemoryDatabase("TesingDb"));
+            } else
+            {
+                services.AddDbContext<MarketPlaceBackendContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("MarketPlaceBackendContext")));
+            }
             services.AddTransient<IApplicationService, ApplicationService>();
         }
 
