@@ -3,14 +3,9 @@ using MarketPlaceBackend.Controllers;
 using MarketPlaceBackend.Models;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
 using System.Collections.Generic;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text;
 using MarketPlaceBackend.Services;
 
 namespace MarketPlaceBackend.Tests

@@ -39,6 +39,9 @@ namespace MarketPlaceBackend
             {
                 services.AddDbContext<MarketPlaceBackendContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("MarketPlaceBackendContext")));
+
+                //services.AddDbContext<MarketPlaceBackendContext>(options => // for docker file
+                //    options.UseSqlServer(Configuration.GetConnectionString("DockerContext")));
             }
             services.AddTransient<IApplicationService, ApplicationService>();
         }
@@ -54,6 +57,11 @@ namespace MarketPlaceBackend
             {
                 app.UseHsts();
             }
+
+            //for docker 
+
+            //var context = app.ApplicationServices.GetService<MarketPlaceBackendContext>();
+            //context.Database.Migrate();
 
             app.UseHttpsRedirection();
             app.UseMvc();
