@@ -6,7 +6,7 @@ services:
     container_name: RTM
     build: .
     ports:
-      - "80:80"
+      - "5004:80"
     depends_on:
       - db
     

@@ -23,7 +23,7 @@ namespace RTMService.Controllers
         }
 
         // creating a workspace
-        //[HttpPost]
+        [HttpPost]
         [Route("workspaces")]
         public IActionResult CreateWorkspace([FromBody] WorkspaceView workspace) // frombody workspace object or string name
         {

@@ -1,6 +1,8 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using Newtonsoft.Json;
 using RTMService.Models;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,13 +41,32 @@ namespace RTMService.Services
 
         public async Task<Workspace> GetWorkspaceById(string id)
         {
-            
+
             return await _dbWorkSpace.Find(w => w.WorkspaceId == id).FirstOrDefaultAsync();
         }
 
         public async Task<Workspace> GetWorkspaceByName(string workspaceName)
         {
-            return await _dbWorkSpace.Find(w => w.WorkspaceName == workspaceName).FirstOrDefaultAsync();
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            var stringifiedWorkspace = cache.StringGetAsync($"{workspaceName}");
+            if (stringifiedWorkspace.Result.HasValue)
+            {
+                var workspaceObject = JsonConvert.DeserializeObject<Workspace>(stringifiedWorkspace.Result);
+
+                return workspaceObject;
+            }
+
+
+
+            var Workspace = _dbWorkSpace.Find(w => w.WorkspaceName == workspaceName).FirstOrDefaultAsync();
+            string jsonString = JsonConvert.SerializeObject(Workspace.Result);
+            await cache.StringSetAsync($"{workspaceName}", jsonString, TimeSpan.FromMinutes(1));
+
+            return await Workspace;
+
+
+
         }
 
         public async Task<Workspace> CreateWorkspace(WorkspaceView workSpace)
@@ -70,12 +91,12 @@ namespace RTMService.Services
                 await CreateDefaultChannel(newChannel, workSpace.WorkspaceName);
             }
 
-            return await GetWorkspaceByName(workSpace.WorkspaceName);
+            return await GetWorkspaceById(newWorkspace.WorkspaceId);
         }
         public async Task DeleteWorkspace(string id)
         {
-           
-             await _dbWorkSpace.DeleteOneAsync(w => w.WorkspaceId== id);
+
+            await _dbWorkSpace.DeleteOneAsync(w => w.WorkspaceId == id);
         }
 
         public async Task<Channel> CreateChannel(Channel channel, string workspaceName)
@@ -88,11 +109,17 @@ namespace RTMService.Services
             result.WorkspaceId = searchedWorkspace.WorkspaceId;
             var filter = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == result.WorkspaceId);
             await _dbWorkSpace.ReplaceOneAsync(filter, result);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            string jsonString = JsonConvert.SerializeObject(result);
+            await cache.StringSetAsync($"{workspaceName}", jsonString);
+            ///////////
             return channel;
         }
         public async Task<Channel> CreateDefaultChannel(Channel channel, string workspaceName)
         {
-            
+
             var searchedWorkspace = GetWorkspaceByName(workspaceName).Result;
             channel.WorkspaceId = searchedWorkspace.WorkspaceId;
             await _dbChannel.InsertOneAsync(channel);
@@ -100,7 +127,13 @@ namespace RTMService.Services
             result.DefaultChannels.Add(channel);
             result.WorkspaceId = searchedWorkspace.WorkspaceId;
             var filter = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == result.WorkspaceId);
-            await _dbWorkSpace.ReplaceOneAsync(filter,result);
+            await _dbWorkSpace.ReplaceOneAsync(filter, result);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            string jsonString = JsonConvert.SerializeObject(result);
+            await cache.StringSetAsync($"{workspaceName}", jsonString);
+            ///////////
             return channel;
         }
         public async Task<Channel> CreateOneToOneChannel(Channel channel, string workspaceName)
@@ -136,6 +169,12 @@ namespace RTMService.Services
                 .Set(r => r.Channels, resultWorkspace.Channels)
                 .Set(r => r.WorkspaceId, resultChannel.WorkspaceId);
             await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            string jsonString = JsonConvert.SerializeObject(resultWorkspace);
+            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            ///////////
             return newUser;
 
         }
@@ -160,13 +199,19 @@ namespace RTMService.Services
                 .Set(r => r.DefaultChannels, resultWorkspace.DefaultChannels)
                 .Set(r => r.WorkspaceId, resultChannel.WorkspaceId);
             await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            string jsonString = JsonConvert.SerializeObject(resultWorkspace);
+            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            ///////////
             return newUser;
 
         }
         public async Task<Message> AddMessageToChannel(Message message, string channelId, string senderMail)
         {
 
-            
+
             var resultChannel = GetChannelById(channelId).Result;
             var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
             //var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
@@ -204,8 +249,14 @@ namespace RTMService.Services
             var filterWorkspace = new FilterDefinitionBuilder<Workspace>().Where(r => r.WorkspaceId == channelresult.WorkspaceId);
             var updateWorkspace = Builders<Workspace>.Update
                 .Set(r => r.DefaultChannels, workspace.DefaultChannels)
-                .Set(r => r.Channels,workspace.Channels)
+                .Set(r => r.Channels, workspace.Channels)
                 .Set(r => r.WorkspaceId, workspace.WorkspaceId);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            string jsonString = JsonConvert.SerializeObject(workspace);
+            await cache.StringSetAsync($"{workspace.WorkspaceName}", jsonString);
+            ///////////
             await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
 
         }
@@ -233,6 +284,12 @@ namespace RTMService.Services
                 .Set(r => r.Channels, resultWorkspace.Channels)
                 .Set(r => r.WorkspaceId, resultWorkspace.WorkspaceId);
             await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            string jsonString = JsonConvert.SerializeObject(resultWorkspace);
+            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            ///////////
         }
 
         public List<User> GetAllUsersInWorkspace(string workspaceName)
@@ -265,11 +322,16 @@ namespace RTMService.Services
             {
                 await AddUserToDefaultChannel(user, defaultChannel.ChannelId);
             }
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
 
+            string jsonString = JsonConvert.SerializeObject(resultWorkspace);
+            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            ///////////
             return user;
         }
         public async Task<string> GetChannelIdForOneToOneChat(string senderMail, string receiverMail, string workspaceId)
-        {     
+        {
             try
             {
                 var entry = await _dbOneToOne.
@@ -287,7 +349,7 @@ namespace RTMService.Services
         public async Task<Channel> GetChannelForOneToOneChat(string senderMail, string receiverMail, string workspaceName)
         {
             var workspace = GetWorkspaceByName(workspaceName).Result;
-            var channelId = GetChannelIdForOneToOneChat(senderMail, receiverMail,workspace.WorkspaceId).Result;
+            var channelId = GetChannelIdForOneToOneChat(senderMail, receiverMail, workspace.WorkspaceId).Result;
             var oneToOneChannel = GetChannelById(channelId);
             if (oneToOneChannel.Result != null)
             {
@@ -338,7 +400,7 @@ namespace RTMService.Services
 
         public User GetUserByEmail(string emailId, string workspaceName)
         {
-            var resultWorkspace =  GetWorkspaceByName(workspaceName).Result;
+            var resultWorkspace = GetWorkspaceByName(workspaceName).Result;
             var user = resultWorkspace.Users.Find(u => u.EmailId == emailId);
             return user;
         }
