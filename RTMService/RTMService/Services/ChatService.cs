@@ -389,6 +389,17 @@ namespace RTMService.Services
         {
             var workspace = GetWorkspaceByName(workspaceName).Result;
             var channelId = GetChannelIdForOneToOneChat(senderMail, receiverMail, workspace.WorkspaceId).Result;
+            //changed
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            var stringifiedChannel = cache.StringGetAsync($"{channelId}");
+            if (stringifiedChannel.Result.HasValue)
+            {
+                var ChannelObject = JsonConvert.DeserializeObject<Channel>(stringifiedChannel.Result);
+
+                return ChannelObject;
+            }
+            /////////
             var oneToOneChannel = GetChannelById(channelId);
             if (oneToOneChannel.Result != null)
             {
