@@ -114,6 +114,8 @@ namespace RTMService.Services
 
             string jsonString = JsonConvert.SerializeObject(result);
             await cache.StringSetAsync($"{workspaceName}", jsonString);
+            string jsonStringChannel = JsonConvert.SerializeObject(channel);
+            await cache.StringSetAsync($"{channel.ChannelId}", jsonStringChannel);
             ///////////
             return channel;
         }
@@ -142,11 +144,34 @@ namespace RTMService.Services
             var searchedWorkspace = GetWorkspaceByName(workspaceName).Result;
             channel.WorkspaceId = searchedWorkspace.WorkspaceId;
             await _dbChannel.InsertOneAsync(channel);
+            //storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+            //changed
+            string jsonString = JsonConvert.SerializeObject(channel);
+            await cache.StringSetAsync($"{channel.ChannelId}", jsonString);
             return channel;
         }
         public async Task<Channel> GetChannelById(string channelId)
         {
-            return await _dbChannel.Find(w => w.ChannelId == channelId).FirstOrDefaultAsync();
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+
+            var stringifiedChannel = cache.StringGetAsync($"{channelId}");
+            if (stringifiedChannel.Result.HasValue)
+            {
+                var channelObject = JsonConvert.DeserializeObject<Channel>(stringifiedChannel.Result);
+
+                return channelObject;
+            }
+
+
+
+            var Channel = _dbChannel.Find(w => w.ChannelId == channelId).FirstOrDefaultAsync();
+            string jsonString = JsonConvert.SerializeObject(Channel.Result);
+            await cache.StringSetAsync($"{channelId}", jsonString);
+
+            return await Channel;
+            //changed
+            //return await _dbChannel.Find(w => w.ChannelId == channelId).FirstOrDefaultAsync();
         }
         public async Task<User> AddUserToChannel(User newUser, string channelId)
         {
@@ -172,8 +197,11 @@ namespace RTMService.Services
             /////Storing in cache
             var cache = RedisConnectorHelper.Connection.GetDatabase();
 
-            string jsonString = JsonConvert.SerializeObject(resultWorkspace);
-            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            string jsonStringWorkspace = JsonConvert.SerializeObject(resultWorkspace);
+            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonStringWorkspace);
+            // storing channel in cache
+            string jsonStringChannel = JsonConvert.SerializeObject(resultChannel);
+            await cache.StringSetAsync($"{resultChannel.ChannelId}", jsonStringChannel);
             ///////////
             return newUser;
 
@@ -202,8 +230,11 @@ namespace RTMService.Services
             /////Storing in cache
             var cache = RedisConnectorHelper.Connection.GetDatabase();
 
-            string jsonString = JsonConvert.SerializeObject(resultWorkspace);
-            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            string jsonStringWorkspace = JsonConvert.SerializeObject(resultWorkspace);
+            await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonStringWorkspace);
+            // storing channel in cache
+            string jsonStringChannel = JsonConvert.SerializeObject(resultChannel);
+            await cache.StringSetAsync($"{resultChannel.ChannelId}", jsonStringChannel);
             ///////////
             return newUser;
 
@@ -213,7 +244,7 @@ namespace RTMService.Services
 
 
             var resultChannel = GetChannelById(channelId).Result;
-            var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
+            //var resultWorkspace = GetWorkspaceById(resultChannel.WorkspaceId).Result;
             //var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
             Message newMessage = message;
             await _dbMessage.InsertOneAsync(newMessage);
@@ -233,6 +264,12 @@ namespace RTMService.Services
                 .Set(r => r.ChannelId, resultChannel.ChannelId)
                 .Set(r => r.Messages, resultChannel.Messages);
             await _dbChannel.UpdateOneAsync(filter, update);
+            /////Storing in cache
+            var cache = RedisConnectorHelper.Connection.GetDatabase();
+            //changed
+            // storing channel in cache
+            string jsonStringChannel = JsonConvert.SerializeObject(resultChannel);
+            await cache.StringSetAsync($"{resultChannel.ChannelId}", jsonStringChannel);
             return newMessage;
 
         }
@@ -286,9 +323,11 @@ namespace RTMService.Services
             await _dbWorkSpace.UpdateOneAsync(filterWorkspace, updateWorkspace);
             /////Storing in cache
             var cache = RedisConnectorHelper.Connection.GetDatabase();
-
+            //changed
             string jsonString = JsonConvert.SerializeObject(resultWorkspace);
             await cache.StringSetAsync($"{resultWorkspace.WorkspaceName}", jsonString);
+            string jsonStringChannel = JsonConvert.SerializeObject(channel);
+            await cache.StringSetAsync($"{channel.ChannelId}", jsonStringChannel);
             ///////////
         }
 
