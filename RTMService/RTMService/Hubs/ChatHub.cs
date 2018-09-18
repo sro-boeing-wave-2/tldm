@@ -57,18 +57,35 @@ namespace RTMService.Hubs
             Clients.Group(channelId).SendAsync("SendMessageInChannel", sender, newMessage);
             //Clients.Client(Context.ConnectionId).SendAsync(channelId);
         }
-        //public override Task OnConnectedAsync()
-        //{
-        //    string userId = null;
-        //    Clients.All.SendAsync("DisplayUserOnline", userId);
-
-        //    return base.OnConnectedAsync();
-        //}
-        //public override Task OnDisconnectedAsync(Exception exception)
-        //{
-            
-        //    CurrentConnections.Remove(Context.ConnectionId);
-        //    return base.OnDisconnectedAsync(exception);
-        //}
+        static Dictionary<string, string> CurrentConnections = new Dictionary<string, string>();
+        public override Task OnConnectedAsync()
+        {
+            string id = Context.ConnectionId;
+            CurrentConnections.Add(id, "");
+            //SendToAllconnid(CurrentConnections.Count);
+            return base.OnConnectedAsync();
+        }
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            CurrentConnections.Remove(Context.ConnectionId);
+            return base.OnDisconnectedAsync(exception);
+        }
+        public void SendToAllconnid(string emailId)
+        {
+            int i = 0;
+            if (emailId == null && CurrentConnections.ContainsKey(emailId))
+            { return; }
+            else
+            {
+                CurrentConnections[Context.ConnectionId] = emailId;
+            }
+            string[] arr = new string[CurrentConnections.Count];
+            foreach (var item in CurrentConnections)
+            {
+                arr[i] = item.Value;
+                i++;
+            }
+            Clients.All.SendAsync("sendToAllconnid", arr);
+        }
     }
 }
