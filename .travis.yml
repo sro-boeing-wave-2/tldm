@@ -18,5 +18,6 @@ dotnet: 2.1
 
 script:
 
-  - dotnet restore
+  - dotnet restore MarketPlace/MarketPlace.csproj
+  - dotnet restore MarketPlace.Tests/MarketPlace.Tests.csproj
   - dotnet test MarketPlaceBackend.Tests

@@ -10544,11 +10544,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace.Tests\\MarketPlace.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace.Tests\\MarketPlace.Tests.csproj",
       "projectName": "MarketPlace.Tests",
-      "projectPath": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace.Tests\\MarketPlace.Tests.csproj",
+      "projectPath": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace.Tests\\MarketPlace.Tests.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace.Tests\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -10567,8 +10567,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace\\MarketPlace.csproj": {
-              "projectPath": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace\\MarketPlace.csproj"
+            "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace\\MarketPlace.csproj": {
+              "projectPath": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace\\MarketPlace.csproj"
             }
           }
         }
@@ -10603,6 +10603,7 @@
             "version": "[15.7.0, )"
           },
           "Microsoft.NETCore.App": {
+            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
             "autoReferenced": true

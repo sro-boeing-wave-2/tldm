@@ -12224,11 +12224,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace\\MarketPlace.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace\\MarketPlace.csproj",
       "projectName": "MarketPlace",
-      "projectPath": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace\\MarketPlace.csproj",
+      "projectPath": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace\\MarketPlace.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\PRODUCT DEVELOPMENT\\Marketplace Backend\\MarketPlace\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Documents\\Marketplace Backend Using Services\\MarketPlace\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
