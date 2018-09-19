@@ -66,10 +66,10 @@ namespace MarketPlaceBackend
 
             //for docker 
 
-            // var context = app.ApplicationServices.GetService<MarketPlaceBackendContext>();
-            // context.Database.Migrate();
+            var context = app.ApplicationServices.GetService<MarketPlaceBackendContext>();
+            context.Database.Migrate();
             app.UseCors("AppPolicy");
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

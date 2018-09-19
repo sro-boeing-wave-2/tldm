@@ -4,12 +4,12 @@ EXPOSE 4000
 EXPOSE 2720
 
 FROM microsoft/dotnet:2.1-sdk AS build
-WORKDIR /Verification
+WORKDIR /MarketplaceBackend
 COPY *.csproj ./
 RUN dotnet restore
 COPY . .
 
-WORKDIR /Verification
+WORKDIR /MarketplaceBackend
 RUN dotnet build MarketPlaceBackend.csproj -c Release -o /app
 
 FROM build AS publish

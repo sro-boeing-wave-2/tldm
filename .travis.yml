@@ -17,7 +17,11 @@ mono: none
 dotnet: 2.1
 
 script:
-
+  - chmod +x ./deploy.sh
+  - ls -alh
   - dotnet restore MarketPlace/MarketPlace.csproj
   - dotnet restore MarketPlace.Tests/MarketPlace.Tests.csproj
   - dotnet test MarketPlaceBackend.Tests
+
+after_success:
+  - /bin/bash ./deploy.sh
