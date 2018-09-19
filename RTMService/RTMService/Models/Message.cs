@@ -27,6 +27,9 @@ namespace RTMService.Models
         [BsonElement("isStarred")]
         public bool IsStarred { get; set; }
 
+        [BsonElement("channelId")]
+        public string ChannelId { get; set; }
+
         [BsonElement("sender")]
         public User Sender { get; set; }
     }

@@ -189,6 +189,18 @@ namespace RTMService.Controllers
             var channel = iservice.GetChannelById(channelId).Result;
             return new ObjectResult(channel);
         }
+        // // getting last n messages of channel
+        [HttpGet]
+        [Route("workspaces/channel/messages/{channelId}/{N}")]
+        public IActionResult GetLastNMessagesOfChannel(string channelId,int N)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var ListOfMessages = iservice.GetLastNMessagesOfChannel(channelId,N).Result;
+            return new ObjectResult(ListOfMessages);
+        }
 
         //// Adding a user to a workspace
         [HttpPut]

@@ -239,6 +239,15 @@ namespace RTMService.Services
             return newUser;
 
         }
+        //changed
+        public async Task<List<Message>> GetLastNMessagesOfChannel(string channelId, int N)
+        {
+            var listOfMessages = await  _dbMessage.Find(m => m.ChannelId==channelId).ToListAsync();
+            var sortedMessages = listOfMessages.OrderBy(m => m.Timestamp).ToList();
+            var list = sortedMessages.Skip(sortedMessages.Count() - N).Take(2).ToList();
+            return list;
+            //return channel.Messages.Skip(channel.Messages.Count() - N).Take(3).ToList();
+        }
         public async Task<Message> AddMessageToChannel(Message message, string channelId, string senderMail)
         {
 
@@ -248,16 +257,22 @@ namespace RTMService.Services
             //var resultSender = GetUserByEmail(senderMail, resultWorkspace.WorkspaceName);
             Message newMessage = message;
             await _dbMessage.InsertOneAsync(newMessage);
-            if (resultChannel.Messages.Count() < 50)
-            {
-                resultChannel.Messages.Add(newMessage);
-            }
-            else
-            {
-                resultChannel.Messages.RemoveAt(0);
-                resultChannel.Messages.Add(newMessage);
-            }
+           
+            resultChannel.Messages.Add(newMessage);
 
+            var lastmessages = resultChannel.Messages.Skip(Math.Max(0, resultChannel.Messages.Count() - 5)).ToList();
+            Channel cacheChannel = new Channel()
+            {
+                Messages = lastmessages,
+                ChannelId = resultChannel.ChannelId,
+                Users = resultChannel.Users,
+                WorkspaceId = resultChannel.WorkspaceId,
+                ChannelName = resultChannel.ChannelName,
+                Admin = resultChannel.Admin
+            };
+            //this is the culprit
+            //cacheChannel.Messages = lastmessages;
+            ///////////////////////////
             resultChannel.ChannelId = channelId;
             var filter = new FilterDefinitionBuilder<Channel>().Where(r => r.ChannelId == resultChannel.ChannelId);
             var update = Builders<Channel>.Update
@@ -268,7 +283,7 @@ namespace RTMService.Services
             var cache = RedisConnectorHelper.Connection.GetDatabase();
             //changed
             // storing channel in cache
-            string jsonStringChannel = JsonConvert.SerializeObject(resultChannel);
+            string jsonStringChannel = JsonConvert.SerializeObject(cacheChannel);
             await cache.StringSetAsync($"{resultChannel.ChannelId}", jsonStringChannel);
             return newMessage;
 

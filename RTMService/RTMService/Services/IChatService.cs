@@ -45,6 +45,7 @@ namespace RTMService.Services
         ////Task UpdateUserInWorkspace(User user);
 
         //////Message related task
+        Task<List<Message>> GetLastNMessagesOfChannel(string channelId, int N);
         Task<Message> AddMessageToChannel(Message message, string channelId, string senderMail);
         ////Task DeleteMessageInChannel(string workspaceName, int channelId, int messageId);
 
